@@ -32,7 +32,7 @@ class TestFunctionalPipeline(unittest.TestCase):
 
     def test_parser_success(self):
         from src.llm.parser import split_and_save_briefing
-        raw_text = "## 1. Lineage\nA\n## 2. Actions\nB\n## 3. Creative Drafts\nC\n## 4. Analyst Assessment\nD"
+        raw_text = "## 1. Cronologia\nA\n## 2. Azioni\nB\n## 3. Bozze Creative\nC\n## 4. Analisi\nD"
         res = split_and_save_briefing(raw_text, ".", "TESTDATE")
         self.assertEqual(len(res), 4)
         for f in res:
