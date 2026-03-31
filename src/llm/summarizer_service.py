@@ -6,6 +6,7 @@ import requests
 from google import genai
 
 from src.core.config import GEMINI_API_KEY, NOTES_DIR, TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID, validate_summarizer_config
+from src.llm.parser import split_and_save_briefing
 
 logger = logging.getLogger(__name__)
 
@@ -53,10 +54,17 @@ def run_summarizer():
     client = genai.Client(api_key=GEMINI_API_KEY)
     
     system_prompt = (
-        "You are an intelligent assistant that consolidates daily voice notes into a clear, "
-        "well-organized Markdown summary. Extract key action items, group related thoughts, "
-        "and provide a coherent narrative of the day while preserving important details. "
-        "Respond only with the Markdown content."
+        "You are an elite 'Second Brain' intelligent assistant analyzing a user's daily voice notes. "
+        "You MUST output your response in EXACTLY four sections, starting with these exact headers:\n"
+        "## 1. Lineage\n"
+        "(Summarize the raw thoughts chronologically so context is never lost.)\n\n"
+        "## 2. Actions\n"
+        "(Extract concrete action items, to-do lists, and strategize the execution of any projects mentioned.)\n\n"
+        "## 3. Creative Drafts\n"
+        "(Take any creative, philosophical, or abstract thoughts and write fully-formed Twitter threads or blog post drafts.)\n\n"
+        "## 4. Analyst Assessment\n"
+        "(Act as a psychologist and Devil's Advocate. Connect patterns in their thinking, point out blind spots, and challenge their assumptions.)\n\n"
+        "Do NOT output any other top-level headers. You MUST strictly follow this Markdown structure."
     )
 
     try:
@@ -70,14 +78,15 @@ def run_summarizer():
         )
         
         summary_markdown = response.text.strip()
-        summary_filename = f"{today_str}_Summary.md"
-        summary_filepath = os.path.join(folder_path, summary_filename)
         
-        with open(summary_filepath, "w", encoding="utf-8") as f:
-            f.write(summary_markdown)
-            
-        logger.info(f"Successfully generated and saved {summary_filename}")
-        send_telegram_message(f"✅ **Daily consolidation complete!**\nSummary saved to `{summary_filename}`.")
+        saved_files = split_and_save_briefing(summary_markdown, folder_path, today_str)
+        
+        logger.info(f"Successfully generated and saved {len(saved_files)} files.")
+        
+        if len(saved_files) == 4:
+            send_telegram_message(f"✅ **Daily Second Brain processing complete!**\nSeparated into Lineage, Actions, Drafts, and Analysis.")
+        else:
+            send_telegram_message(f"⚠️ **Daily processing complete!**\nFallback briefing triggered (hallucinated headers).")
 
     except Exception as e:
         logger.error(f"Error calling LLM API: {e}")

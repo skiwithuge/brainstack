@@ -26,8 +26,26 @@ class TestFunctionalPipeline(unittest.TestCase):
             content = f.read()
             self.assertEqual(content, content_str)
             
+            
         # Clean up
         os.remove(filepath)
+
+    def test_parser_success(self):
+        from src.llm.parser import split_and_save_briefing
+        raw_text = "## 1. Lineage\nA\n## 2. Actions\nB\n## 3. Creative Drafts\nC\n## 4. Analyst Assessment\nD"
+        res = split_and_save_briefing(raw_text, ".", "TESTDATE")
+        self.assertEqual(len(res), 4)
+        for f in res:
+            self.assertTrue(os.path.exists(f))
+            os.remove(f)
+
+    def test_parser_failsafe(self):
+        from src.llm.parser import split_and_save_briefing
+        raw_text = "Missing all the headers! Uh oh!"
+        res = split_and_save_briefing(raw_text, ".", "TESTDATE")
+        self.assertEqual(len(res), 1)
+        self.assertTrue(os.path.exists(res[0]))
+        os.remove(res[0])
 
 if __name__ == '__main__':
     unittest.main()

@@ -17,3 +17,11 @@ This document serves as the persistent memory and "building flow" tracker for au
 - Re-architected code from single monoliths into isolated functional modules (`/src/telegram`, `/src/audio`, `/src/llm`, `/src/core`).
 - Adopted `unittest` based functional tests as the determinant of success (`scripts/verify.sh`).
 **Dependencies:** No new external dependencies added.
+
+### [2026-03-31] Second Brain Feature Implementation
+**Goal:** Upgrade the passive summarizer into a multi-persona intelligence engine processing Lineage, Actions, Drafts, and Analysis.
+**Structural Decisions:**
+- Created `src/llm/parser.py` using Regex to cleanly split the massive single output.
+- Overhauled `summarizer_service.py` system prompt to strictly enforce the split boundaries.
+- Adhered strictly to `verify.sh` requirements by implementing `test_parser_success` and `test_parser_failsafe` tests in `test_functional.py`.
+**Dependencies:** None.
