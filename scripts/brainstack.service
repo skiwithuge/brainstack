@@ -1,0 +1,22 @@
+[Unit]
+Description=Brainstack Telegram Voice Notes Daemon
+After=network.target
+
+[Service]
+Type=simple
+# Assumes the script is running as root in an unprivileged LXC. 
+# Safe enough for a dedicated container, but can be changed to a dedicated user.
+User=root
+WorkingDirectory=/opt/brainstack
+# Must use the python binary inside the virtual environment
+ExecStart=/opt/brainstack/venv/bin/python /opt/brainstack/bot.py
+Restart=always
+RestartSec=10
+
+# Security (Optional hardening for LXC)
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/opt/brainstack/Notes /opt/brainstack/.env
+
+[Install]
+WantedBy=multi-user.target
