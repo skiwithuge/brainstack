@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  brainstack-bot:
+    build: .
+    container_name: brainstack_bot
+    restart: always
+    env_file: .env
+    command: python bot.py
+    volumes:
+      - ./Notes:/opt/brainstack/Notes
+      - ./.env:/opt/brainstack/.env
+
+  brainstack-web:
+    build: .
+    container_name: brainstack_web
+    restart: always
+    env_file: .env
+    command: uvicorn src.web.server:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./Notes:/opt/brainstack/Notes
+      - ./.env:/opt/brainstack/.env

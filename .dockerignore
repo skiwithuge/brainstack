@@ -1,0 +1,10 @@
+.env
+.git
+.github
+Notes/
+__pycache__/
+*.pyc
+venv/
+.venv/
+brainstack.service
+brainstack-web.service
