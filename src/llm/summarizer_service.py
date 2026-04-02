@@ -5,8 +5,9 @@ from datetime import datetime
 import requests
 from google import genai
 
-from src.core.config import GEMINI_API_KEY, NOTES_DIR, TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID, validate_summarizer_config
+from src.core.config import GEMINI_API_KEY, NOTES_DIR, TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID, APP_LANGUAGE, validate_summarizer_config
 from src.llm.parser import split_and_save_briefing
+from src.core.locales import LOCALES
 
 logger = logging.getLogger(__name__)
 
@@ -53,19 +54,8 @@ def run_summarizer():
     logger.info("Calling LLM API for consolidation...")
     client = genai.Client(api_key=GEMINI_API_KEY)
     
-    system_prompt = (
-        "Sei un assistente intelligente 'Secondo Cervello' d'élite che analizza le note vocali giornaliere dell'utente. "
-        "DEVI generare la tua risposta ESATTAMENTE in quattro sezioni, scrivendo ESCLUSIVAMENTE in lingua Italiana, iniziando con le seguenti esatte intestazioni:\n"
-        "## 1. Cronologia\n"
-        "(Riassumi i pensieri grezzi in ordine cronologico in modo da non perdere mai il contesto.)\n\n"
-        "## 2. Azioni\n"
-        "(Estrai elementi d'azione concreti, liste di cose da fare e pianifica l'esecuzione di eventuali progetti menzionati.)\n\n"
-        "## 3. Bozze Creative\n"
-        "(Prendi qualsiasi pensiero creativo, filosofico o astratto e scrivi bozze complete per post di blog o thread.)\n\n"
-        "## 4. Analisi\n"
-        "(Agisci come psicologo e avvocato del diavolo. Collega i modelli nel suo pensiero, evidenzia i punti ciechi e sfida le sue ipotesi.)\n\n"
-        "NON produrre nessun'altra intestazione di primo livello. DEVI seguire rigorosamente questa struttura Markdown e rispondere solo in Italiano."
-    )
+    locale_config = LOCALES.get(APP_LANGUAGE, LOCALES["en"])
+    system_prompt = locale_config["system_prompt"]
 
     try:
         response = client.models.generate_content(

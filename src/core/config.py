@@ -11,6 +11,7 @@ NOTES_DIR = os.getenv("NOTES_DIR", "./Notes")
 WHISPER_MODEL_SIZE = os.getenv("WHISPER_MODEL_SIZE", "small")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 WEB_PASSWORD = os.getenv("WEB_PASSWORD", "brainstack")
+APP_LANGUAGE = os.getenv("APP_LANGUAGE", "en")
 
 def validate_bot_config():
     if not TELEGRAM_BOT_TOKEN:

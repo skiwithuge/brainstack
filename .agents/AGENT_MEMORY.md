@@ -16,7 +16,7 @@ This document serves as the persistent memory and "building flow" tracker for au
 - Enforced a rule that all execution must happen inside the `venv` to prevent global pollution.
 - Re-architected code from single monoliths into isolated functional modules (`/src/telegram`, `/src/audio`, `/src/llm`, `/src/core`).
 - Adopted `unittest` based functional tests as the determinant of success (`scripts/verify.sh`).
-**Dependencies:** No new external dependencies added.
+**Dependencies:** No new external external dependencies added.
 
 ### [2026-03-31] Second Brain Feature Implementation
 **Goal:** Upgrade the passive summarizer into a multi-persona intelligence engine processing Lineage, Actions, Drafts, and Analysis.
@@ -48,3 +48,11 @@ This document serves as the persistent memory and "building flow" tracker for au
 - Drafted `.agents/workflows/update-memory.md` to hijack agent execution states before completion.
 - Scrapped loose textual requirements inside `.agent_rules.md`.
 **Security/State:** N/A.
+
+### [2026-04-02] Internationalization (i18n) Locale Integration
+**Goal:** Abstract hardcoded Italian strings out of the LLM prompt and Regex parser to support Open Source adoption.
+**Structural Decisions:**
+- Added `APP_LANGUAGE` to `.env` falling back gracefully to `"en"`.
+- Extracted literal string rules into a mapping dict inside `src/core/locales.py`.
+- Altered `tests/test_functional.py` to loop over both English and Italian dictionaries to assert total parser stability across both configurations.
+**Security/State:** All syntax validation verified perfectly.
