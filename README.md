@@ -1,38 +1,41 @@
-# Telegram Voice Note Consolidator
+<div align="center">
+  <img src="docs/architecture.png" alt="Brainstack Architecture" width="800"/>
+  <h1>🧠 Brainstack</h1>
+  <p><strong>Your Self-Hosted AI Second Brain</strong></p>
+</div>
 
-A personal Telegram bot that transcribes voice notes using a local Whisper model and consolidates them at the end of the day using an LLM API.
+## 🌟 What is Brainstack?
+Brainstack is a personal, fully self-hosted Telegram bot that records your unstructured audio thoughts, transcribes them using local `faster-whisper`, and meticulously organizes them into a daily Markdown journal using `google-genai`. It includes a built-in FastAPI web viewer to securely traverse and edit your digital mind.
 
-## Architecture
-- **Receiver Bot:** Listens via Telegram, transcribes locally using `faster-whisper` (optimized for Italian), and writes `.md` notes.
-- **Summarizer:** A separate script invoked daily via `cron` to read the notes and create an LLM-powered Markdown summary.
+## 🚀 Quick Start (Docker)
 
-## Setup Instructions
+Deploying Brainstack to your homelab is natively supported via Docker Compose.
 
-1. **Clone or Rsync this folder** to your homelab.
-2. **Install Dependencies:**
-   We recommend using a virtual environment.
+1. **Clone the repository:**
    ```bash
-   python -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
+   git clone https://github.com/yourusername/brainstack.git
+   cd brainstack
    ```
-3. **Configuration:**
-   - Copy `.env.example` to `.env`.
-   - Add your Telegram Bot Token (from BotFather).
-   - Add your numeric Telegram User ID (important for security).
-   - Add your Gemini API key for the nightly summary.
-4. **Running the Bot:**
-   Start the receiver daemon:
+2. **Configure your Environment:**
    ```bash
-   python bot.py
+   cp .env.example .env
+   # Edit .env with your Telegram token, Gemini API key, and Web Password
    ```
-   *Consider running this using `systemd`, `tmux`, or `supervisor` so it runs continuously in the background.*
-5. **Scheduling the Summarizer:**
-   Setup a cron job to run the summarizer script every night at 23:59:
+3. **Launch the Stack:**
    ```bash
-   crontab -e
+   docker-compose up -d
    ```
-   Add a line similar to this (adjusting paths to your setup):
-   ```cron
-   59 23 * * * cd /path/to/project && /path/to/venv/bin/python summarizer.py
-   ```
+
+*The bot will immediately start listening on your private Telegram channel, and your web viewer will be running securely at `http://localhost:8000`.*
+
+---
+
+## 🏗️ Architecture Design
+Brainstack strictly follows a microservice philosophy:
+- **`brainstack-bot`**: Listens to Telegram audio, transcribes it cleanly, and prompts Gemini to categorize your thoughts into 4 distinct phases (Lineage, Actions, Content Drafts, Psychologist Analysis). 
+- **`brainstack-web`**: A lightweight FastAPI wrapper serving pure HTML templates, meaning there is zero Javascript bloat when managing your Markdown strings.
+
+Personal Notes and Environment configurations are strictly `.dockerignore`'d and `.gitignore`'d to maintain complete data supremacy. 
+
+## 🤝 Contributing
+Open-source contributions are welcome! To maintain the strict deterministic logic of the parser, please read [CONTRIBUTING.md](CONTRIBUTING.md) for information on using the mandated `./scripts/verify.sh` test suite before filing Pull Requests.
