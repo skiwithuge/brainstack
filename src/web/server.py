@@ -39,7 +39,7 @@ async def list_files(request: Request, username: str = Depends(verify_credential
                 tree[date_dir] = sorted(md_files)
                 
     sorted_tree = dict(sorted(tree.items(), reverse=True))
-    return templates.TemplateResponse("index.html", {"request": request, "tree": sorted_tree})
+    return templates.TemplateResponse(request=request, name="index.html", context={"request": request, "tree": sorted_tree})
 
 @app.get("/view/{date_str}/{filename}", response_class=HTMLResponse)
 async def view_file(request: Request, date_str: str, filename: str, username: str = Depends(verify_credentials)):
@@ -52,7 +52,7 @@ async def view_file(request: Request, date_str: str, filename: str, username: st
         
     html_content = markdown.markdown(content)
     
-    return templates.TemplateResponse("view.html", {
+    return templates.TemplateResponse(request=request, name="view.html", context={
         "request": request, 
         "date_str": date_str, 
         "filename": filename, 
@@ -68,7 +68,7 @@ async def edit_file_get(request: Request, date_str: str, filename: str, username
     with open(filepath, "r", encoding="utf-8") as f:
         content = f.read()
         
-    return templates.TemplateResponse("edit.html", {
+    return templates.TemplateResponse(request=request, name="edit.html", context={
         "request": request, 
         "date_str": date_str, 
         "filename": filename, 
