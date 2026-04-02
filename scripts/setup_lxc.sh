@@ -27,16 +27,25 @@ pip install -r requirements.txt
 
 echo "⚙️  4. Installing Systemd Daemon..."
 if [ -f "scripts/brainstack.service" ]; then
-    cp scripts/brainstack.service /etc/systemd/system/brainstack.service
+    # Setup Systemd Services
+    echo "Configuring background services..."
+    cp /opt/brainstack/scripts/brainstack.service /etc/systemd/system/
+    cp /opt/brainstack/scripts/brainstack-web.service /etc/systemd/system/
     systemctl daemon-reload
     systemctl enable brainstack.service
-    echo "✅ Systemd service installed and enabled to start on boot!"
+    systemctl enable brainstack-web.service
+    systemctl start brainstack.service
+    systemctl start brainstack-web.service
+
+    echo "✅ Systemd services installed and enabled!"
 else
     echo "⚠️  scripts/brainstack.service not found. Skipping daemon install."
 fi
 
 echo "=========================================================="
 echo "🎉 Setup Complete!"
+echo "- Telegram bot is running as a daemon."
+echo "- Web Viewer is running on port 8000."
 echo ""
 echo "Next Steps:"
 echo "1. Create your environment file: cp .env.example .env"

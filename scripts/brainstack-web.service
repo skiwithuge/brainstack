@@ -1,0 +1,16 @@
+[Unit]
+Description=Brainstack FastAPI Web Viewer
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/brainstack
+Environment="VIRTUAL_ENV=/opt/brainstack/venv"
+Environment="PATH=/opt/brainstack/venv/bin:$PATH"
+ExecStart=/opt/brainstack/venv/bin/uvicorn src.web.server:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -10,6 +10,7 @@ AUTHORIZED_USER_ID = int(auth_id_str) if auth_id_str.isdigit() else 0
 NOTES_DIR = os.getenv("NOTES_DIR", "./Notes")
 WHISPER_MODEL_SIZE = os.getenv("WHISPER_MODEL_SIZE", "small")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+WEB_PASSWORD = os.getenv("WEB_PASSWORD", "brainstack")
 
 def validate_bot_config():
     if not TELEGRAM_BOT_TOKEN:
