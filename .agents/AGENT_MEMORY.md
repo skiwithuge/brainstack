@@ -56,3 +56,9 @@ This document serves as the persistent memory and "building flow" tracker for au
 - Extracted literal string rules into a mapping dict inside `src/core/locales.py`.
 - Altered `tests/test_functional.py` to loop over both English and Italian dictionaries to assert total parser stability across both configurations.
 **Security/State:** All syntax validation verified perfectly.
+
+### [2026-04-02] Underlying AI Model Upgrades
+**Goal:** Research and upgrade the underlying Gemini connection to the current state-of-the-art model series.
+**Structural Decisions:**
+- Replaced deprecated `gemini-2.5-flash` calls with the latest stable release `gemini-3-flash` across all agent modules. 
+**Security/State:** N/A.
