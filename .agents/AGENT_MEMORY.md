@@ -25,3 +25,26 @@ This document serves as the persistent memory and "building flow" tracker for au
 - Overhauled `summarizer_service.py` system prompt to strictly enforce the split boundaries.
 - Adhered strictly to `verify.sh` requirements by implementing `test_parser_success` and `test_parser_failsafe` tests in `test_functional.py`.
 **Dependencies:** None.
+
+### [2026-04-02] FastAPI Web Viewer Integration
+**Goal:** Add a password-protected web UI for traversing and editing the generated markdown notes.
+**Structural Decisions:**
+- Developed `src/web/server.py` utilizing FastAPI and Jinja2 templates.
+- Enforced HTTP Basic Auth globally through a `WEB_PASSWORD` dependency.
+- Maintained a strict zero-JS, static approach for HTML editing views.
+**Security/State:** Handled `python-multipart` bug and `TemplateResponse` dict unhashable errors successfully. Handled security via local systemd unit `brainstack-web`.
+
+### [2026-04-02] Open Source Docker Package
+**Goal:** Restructure the deployment pipeline to permit open-source one-click Docker deployments.
+**Structural Decisions:**
+- Authored a `Dockerfile` with multi-process capabilities, mapping to a `docker-compose.yml` resolving as `brainstack-bot` and `brainstack-web`.
+- Developed `CONTRIBUTING.md` and overhauled `README.md` into a Github landing page.
+**Security/State:** Severely clamped down git leakage by isolating `.env` and `Notes/` paths inside `.gitignore` and `.dockerignore`.
+
+### [2026-04-02] Agent Memory Workflow Enforcement
+**Goal:** Protect AI Context tracking by migrating into a formal Workflow constraint system.
+**Structural Decisions:**
+- Created the local `.agents/` namespace to stash AI system files.
+- Drafted `.agents/workflows/update-memory.md` to hijack agent execution states before completion.
+- Scrapped loose textual requirements inside `.agent_rules.md`.
+**Security/State:** N/A.
