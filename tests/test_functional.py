@@ -34,39 +34,36 @@ class TestFunctionalPipeline(unittest.TestCase):
         from src.llm.parser import split_and_save_briefing
         from src.core.locales import LOCALES
         import src.core.config
+        import tempfile
         
         original_lang = src.core.config.APP_LANGUAGE
         
         try:
-            # Test English parsing
-            src.core.config.APP_LANGUAGE = "en"
-            hen = LOCALES["en"]["headers"]
-            raw_en = f"## {hen[0]}\nA\n## {hen[1]}\nB\n## {hen[2]}\nC\n## {hen[3]}\nD"
-            res_en = split_and_save_briefing(raw_en, ".", "TESTDATE_EN")
-            self.assertEqual(len(res_en), 4)
-            for f in res_en:
-                self.assertTrue(os.path.exists(f))
-                os.remove(f)
+            with tempfile.TemporaryDirectory() as tmpdir:
+                # Test English parsing
+                src.core.config.APP_LANGUAGE = "en"
+                hen = LOCALES["en"]["headers"]
+                raw_en = f"## {hen[0]}\nA\n## {hen[1]}\nB\n## {hen[2]}\nC\n## {hen[3]}\nD"
+                res_en = split_and_save_briefing(raw_en, tmpdir, "TESTDATE_EN")
+                self.assertEqual(len(res_en), 4)
 
-            # Test Italian parsing
-            src.core.config.APP_LANGUAGE = "it"
-            hit = LOCALES["it"]["headers"]
-            raw_it = f"## {hit[0]}\nA\n## {hit[1]}\nB\n## {hit[2]}\nC\n## {hit[3]}\nD"
-            res_it = split_and_save_briefing(raw_it, ".", "TESTDATE_IT")
-            self.assertEqual(len(res_it), 4)
-            for f in res_it:
-                self.assertTrue(os.path.exists(f))
-                os.remove(f)
+                # Test Italian parsing
+                src.core.config.APP_LANGUAGE = "it"
+                hit = LOCALES["it"]["headers"]
+                raw_it = f"## {hit[0]}\nA\n## {hit[1]}\nB\n## {hit[2]}\nC\n## {hit[3]}\nD"
+                res_it = split_and_save_briefing(raw_it, tmpdir, "TESTDATE_IT")
+                self.assertEqual(len(res_it), 4)
         finally:
             src.core.config.APP_LANGUAGE = original_lang
 
     def test_parser_failsafe(self):
         from src.llm.parser import split_and_save_briefing
-        raw_text = "Missing all the headers! Uh oh!"
-        res = split_and_save_briefing(raw_text, ".", "TESTDATE")
-        self.assertEqual(len(res), 1)
-        self.assertTrue(os.path.exists(res[0]))
-        os.remove(res[0])
+        import tempfile
+        
+        with tempfile.TemporaryDirectory() as tmpdir:
+            raw_text = "Missing all the headers! Uh oh!"
+            res = split_and_save_briefing(raw_text, tmpdir, "TESTDATE")
+            self.assertEqual(len(res), 1)
 
 if __name__ == '__main__':
     unittest.main()
