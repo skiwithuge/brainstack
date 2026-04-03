@@ -59,7 +59,7 @@ def run_summarizer():
 
     try:
         response = client.models.generate_content(
-            model="gemini-3-flash",
+            model="gemini-2.5-flash",
             contents=aggregated_text,
             config=genai.types.GenerateContentConfig(
                 system_instruction=system_prompt,

@@ -62,3 +62,9 @@ This document serves as the persistent memory and "building flow" tracker for au
 **Structural Decisions:**
 - Replaced deprecated `gemini-2.5-flash` calls with the latest stable release `gemini-3-flash` across all agent modules. 
 **Security/State:** N/A.
+
+### [2026-04-02] Docker Compose V2 Compatibility Update
+**Goal:** Resolve warnings regarding deprecated compose syntax tags gracefully.
+**Structural Decisions:**
+- Erased the deprecated `version` metadata header from `docker-compose.yml`, shifting entirely into modern native Compose specifications to prevent user annoyance.
+**Security/State:** N/A.
