@@ -68,3 +68,9 @@ This document serves as the persistent memory and "building flow" tracker for au
 **Structural Decisions:**
 - Erased the deprecated `version` metadata header from `docker-compose.yml`, shifting entirely into modern native Compose specifications to prevent user annoyance.
 **Security/State:** N/A.
+
+### [2026-04-03] Gemini Model Reversion
+**Goal:** Ensure stable API operation across all developer accounts.
+**Structural Decisions:**
+- Reverted the API endpoint string back to `gemini-2.5-flash` since `gemini-3-flash` acts as a marketing term and causes 404 missing endpoint errors on the v1beta API tier.
+**Security/State:** N/A.

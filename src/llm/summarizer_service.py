@@ -26,24 +26,24 @@ def send_telegram_message(message: str):
     except Exception as e:
         logger.error(f"Failed to send Telegram notification: {e}")
 
-def run_summarizer():
+def run_summarizer(target_date: str = None):
     validate_summarizer_config()
-    today_str = datetime.now().strftime("%Y-%m-%d")
-    folder_path = os.path.join(NOTES_DIR, today_str)
+    date_str = target_date if target_date else datetime.now().strftime("%Y-%m-%d")
+    folder_path = os.path.join(NOTES_DIR, date_str)
 
     if not os.path.exists(folder_path):
-        logger.info(f"No folder found for today ({today_str}). Nothing to summarize.")
+        logger.info(f"No folder found for date ({date_str}). Nothing to summarize.")
         return
 
     search_pattern = os.path.join(folder_path, "*_note.md")
     note_files = sorted(glob.glob(search_pattern))
 
     if not note_files:
-        logger.info(f"No note files found in today's folder ({today_str}). Nothing to summarize.")
+        logger.info(f"No note files found in {date_str} folder. Nothing to summarize.")
         return
 
     logger.info(f"Found {len(note_files)} notes to summarize.")
-    aggregated_text = f"Voice Notes for {today_str}:\n\n"
+    aggregated_text = f"Voice Notes for {date_str}:\n\n"
     for filepath in note_files:
         filename = os.path.basename(filepath)
         time_part = filename.split("_note.md")[0].replace("_", ":")
@@ -69,7 +69,7 @@ def run_summarizer():
         
         summary_markdown = response.text.strip()
         
-        saved_files = split_and_save_briefing(summary_markdown, folder_path, today_str)
+        saved_files = split_and_save_briefing(summary_markdown, folder_path, date_str)
         
         logger.info(f"Successfully generated and saved {len(saved_files)} files.")
         
