@@ -4,6 +4,8 @@ import os
 from datetime import datetime
 
 from src.core.config import GEMINI_API_KEY, MEMORY_DIR, TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID, validate_summarizer_config
+from src.core.locales import LOCALES
+import src.core.config as _cfg
 from src.llm.wiki_service import update_from_monthly
 
 logger = logging.getLogger(__name__)
@@ -59,16 +61,7 @@ def run_monthly_summarizer(target_date: str = None) -> None:
     os.makedirs(report_dir, exist_ok=True)
     report_path = os.path.join(report_dir, f"{month_str}_report.md")
 
-    system_prompt = (
-        "You are an elite personal coach synthesizing a month of weekly reviews into a structured monthly report. "
-        "Write a comprehensive monthly report in Markdown covering:\n"
-        "## Monthly Summary\n(Key themes, achievements, and milestones)\n\n"
-        "## Goals Progress\n(Progress on goals, wins, setbacks)\n\n"
-        "## Persistent Patterns\n(Recurring themes across the month)\n\n"
-        "## Open Loops\n(Action items still unresolved)\n\n"
-        "## Next Month Focus\n(Priorities and intentions for the coming month)\n\n"
-        "Be analytical, honest, and constructive."
-    )
+    system_prompt = LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["monthly"]
 
     client = genai.Client(api_key=GEMINI_API_KEY)
     try:

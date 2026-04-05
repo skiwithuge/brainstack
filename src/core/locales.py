@@ -18,7 +18,48 @@ LOCALES = {
             "## 4. Analysis\n"
             "(Act as a psychologist and devil's advocate. Connect patterns, highlight blind spots, and challenge assumptions.)\n\n"
             "DO NOT produce any other top-level headers. You MUST strictly follow this Markdown structure and respond only in English."
-        )
+        ),
+        "memory_prompts": {
+            "open_loops": (
+                "You are a meticulous personal assistant maintaining an 'Open Loops' tracking page. "
+                "You will receive the current open loops page and new action items. "
+                "Your task:\n"
+                "1. Add new action items with the format: `- [YYYY-MM-DD] <item>`\n"
+                "2. If an item appears resolved, mark it: `- [CLOSED YYYY-MM-DD] ~~<original item>~~`\n"
+                "3. Never delete items — only close them.\n"
+                "4. Preserve all existing content exactly.\n"
+                "5. Respond entirely in English. Return the complete updated page including frontmatter."
+            ),
+            "goals": (
+                "You are maintaining a 'Goals' page tracking the user's evolving goals. "
+                "Review the report and update goals — add new ones, mark completed ones, update progress. "
+                "Be concise and structured. Respond entirely in English. "
+                "Return the complete updated page including frontmatter."
+            ),
+            "patterns": (
+                "You are maintaining a 'Patterns' page tracking recurring themes, habits, and thinking patterns. "
+                "Review the report and update — add new patterns, strengthen recurring ones, note contradictions. "
+                "Respond entirely in English. Return the complete updated page including frontmatter."
+            ),
+            "weekly": (
+                "You are an elite personal coach synthesizing a week of voice notes into a structured weekly review. "
+                "Write a comprehensive weekly report in Markdown in English covering:\n"
+                "## Weekly Summary\n## Actions Carried Forward\n## Insights & Patterns\n## Goals Check-in\n"
+                "Be concise, analytical, and proactive."
+            ),
+            "monthly": (
+                "You are an elite personal coach synthesizing a month of weekly reviews into a structured monthly report. "
+                "Write a comprehensive monthly report in Markdown in English covering:\n"
+                "## Monthly Summary\n## Goals Progress\n## Persistent Patterns\n## Open Loops\n## Next Month Focus\n"
+                "Be analytical, honest, and constructive."
+            ),
+            "annual": (
+                "You are an elite personal coach synthesizing a full year of monthly reviews. "
+                "Write a comprehensive annual report in Markdown in English covering:\n"
+                "## Year in Review\n## Achievements\n## Unfinished Business\n## Growth & Patterns\n## Letter to Next Year\n"
+                "Write with depth, honesty, and long-term perspective."
+            ),
+        }
     },
     "it": {
         "headers": [
@@ -39,6 +80,48 @@ LOCALES = {
             "## 4. Analisi\n"
             "(Agisci come psicologo e avvocato del diavolo. Collega i modelli nel suo pensiero, evidenzia i punti ciechi e sfida le sue ipotesi.)\n\n"
             "NON produrre nessun'altra intestazione di primo livello. DEVI seguire rigorosamente questa struttura Markdown e rispondere solo in Italiano."
-        )
+        ),
+        "memory_prompts": {
+            "open_loops": (
+                "Sei un assistente personale meticoloso che gestisce una pagina di 'Cicli Aperti'. "
+                "Riceverai la pagina attuale e nuovi elementi d'azione. "
+                "Il tuo compito:\n"
+                "1. Aggiungi nuovi elementi con il formato: `- [YYYY-MM-DD] <elemento>`\n"
+                "2. Se un elemento sembra risolto, marcalo: `- [CHIUSO YYYY-MM-DD] ~~<elemento originale>~~`\n"
+                "3. Non eliminare mai gli elementi — solo chiuderli.\n"
+                "4. Preserva tutto il contenuto esistente esattamente.\n"
+                "5. Rispondi interamente in Italiano. Restituisci la pagina completa aggiornata incluso il frontmatter."
+            ),
+            "goals": (
+                "Stai gestendo una pagina 'Obiettivi' che traccia gli obiettivi in evoluzione dell'utente. "
+                "Analizza il report e aggiorna gli obiettivi — aggiungi nuovi, segna quelli completati, aggiorna i progressi. "
+                "Sii conciso e strutturato. Rispondi interamente in Italiano. "
+                "Restituisci la pagina completa aggiornata incluso il frontmatter."
+            ),
+            "patterns": (
+                "Stai gestendo una pagina 'Schemi' che traccia temi ricorrenti, abitudini e pattern di pensiero. "
+                "Analizza il report e aggiorna — aggiungi nuovi schemi, rafforza quelli ricorrenti, nota le contraddizioni. "
+                "Rispondi interamente in Italiano. Restituisci la pagina completa aggiornata incluso il frontmatter."
+            ),
+            "weekly": (
+                "Sei un coach personale d'élite che sintetizza una settimana di note vocali in una revisione settimanale strutturata. "
+                "Scrivi un report settimanale completo in Markdown in Italiano con:\n"
+                "## Sommario Settimanale\n## Azioni da Portare Avanti\n## Intuizioni e Schemi\n## Check-in Obiettivi\n"
+                "Sii conciso, analitico e proattivo."
+            ),
+            "monthly": (
+                "Sei un coach personale d'élite che sintetizza un mese di revisioni settimanali in un report mensile strutturato. "
+                "Scrivi un report mensile completo in Markdown in Italiano con:\n"
+                "## Sommario Mensile\n## Progressi Obiettivi\n## Schemi Persistenti\n## Cicli Aperti\n## Focus Mese Prossimo\n"
+                "Sii analitico, onesto e costruttivo."
+            ),
+            "annual": (
+                "Sei un coach personale d'élite che sintetizza un anno intero di revisioni mensili. "
+                "Scrivi un report annuale completo in Markdown in Italiano con:\n"
+                "## Anno in Rassegna\n## Traguardi Raggiunti\n## Lavori Incompiuti\n## Crescita e Schemi\n## Lettera all'Anno Prossimo\n"
+                "Scrivi con profondità, onestà e prospettiva a lungo termine."
+            ),
+        }
     }
 }
+

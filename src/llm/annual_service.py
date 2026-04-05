@@ -4,6 +4,8 @@ import os
 from datetime import datetime
 
 from src.core.config import GEMINI_API_KEY, MEMORY_DIR, TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID, validate_summarizer_config
+from src.core.locales import LOCALES
+import src.core.config as _cfg
 from src.llm.wiki_service import update_from_monthly
 
 logger = logging.getLogger(__name__)
@@ -58,16 +60,7 @@ def run_annual_summarizer(target_date: str = None) -> None:
     os.makedirs(report_dir, exist_ok=True)
     report_path = os.path.join(report_dir, f"{year_str}_report.md")
 
-    system_prompt = (
-        "You are an elite personal coach synthesizing a full year of monthly reviews. "
-        "Write a comprehensive annual report in Markdown covering:\n"
-        "## Year in Review\n(The arc of the year — major themes, turning points)\n\n"
-        "## Achievements\n(What was accomplished this year)\n\n"
-        "## Unfinished Business\n(Open loops and unresolved intentions)\n\n"
-        "## Growth & Patterns\n(How thinking and priorities evolved)\n\n"
-        "## Letter to Next Year\n(Honest advice and intentions for the year ahead)\n\n"
-        "Write with depth, honesty, and long-term perspective."
-    )
+    system_prompt = LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["annual"]
 
     client = genai.Client(api_key=GEMINI_API_KEY)
     try:

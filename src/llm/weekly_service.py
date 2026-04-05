@@ -4,6 +4,8 @@ import os
 from datetime import datetime, timedelta
 
 from src.core.config import GEMINI_API_KEY, NOTES_DIR, MEMORY_DIR, validate_summarizer_config
+from src.core.locales import LOCALES
+import src.core.config as _cfg
 from src.llm.wiki_service import update_from_weekly
 
 logger = logging.getLogger(__name__)
@@ -71,15 +73,7 @@ def run_weekly_summarizer(target_date: str = None) -> None:
     os.makedirs(report_dir, exist_ok=True)
     report_path = os.path.join(report_dir, f"{week_str}_report.md")
 
-    system_prompt = (
-        "You are an elite personal coach synthesizing a week of voice notes into a structured weekly review. "
-        "Write a comprehensive weekly report in Markdown covering:\n"
-        "## Weekly Summary\n(Key themes and highlights across the week)\n\n"
-        "## Actions Carried Forward\n(Unresolved action items that need follow-up)\n\n"
-        "## Insights & Patterns\n(Recurring themes or notable thinking patterns this week)\n\n"
-        "## Goals Check-in\n(Progress on stated goals, any new goals emerging)\n\n"
-        "Be concise, analytical, and proactive. Write in the user's configured language."
-    )
+    system_prompt = LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["weekly"]
 
     client = genai.Client(api_key=GEMINI_API_KEY)
     try:

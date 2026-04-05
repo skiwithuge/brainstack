@@ -5,7 +5,7 @@ from google import genai
 
 from src.core.config import GEMINI_API_KEY, MEMORY_DIR, TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID
 from src.core.locales import LOCALES
-from src.core.config import APP_LANGUAGE
+import src.core.config as _cfg
 
 import requests
 
@@ -124,17 +124,7 @@ def update_from_daily(actions_path: str) -> None:
     current_loops = _read_page("open_loops.md")
     today = datetime.now().strftime("%Y-%m-%d")
 
-    system_prompt = (
-        "You are a meticulous personal assistant maintaining an 'Open Loops' tracking page. "
-        "You will receive the current open loops page and today's new action items. "
-        "Your task:\n"
-        "1. Add new action items from today with the format: `- [YYYY-MM-DD] <item>`\n"
-        "2. If an action item appears to be resolved in today's notes, mark it: "
-        "`- [CLOSED YYYY-MM-DD] ~~<original item>~~`\n"
-        "3. Never delete items — only close them.\n"
-        "4. Preserve all existing content exactly, only adding or marking items.\n"
-        "5. Return the complete updated page content including frontmatter."
-    )
+    system_prompt = LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["open_loops"]
     user_content = (
         f"## Current Open Loops Page\n\n{current_loops}\n\n"
         f"## Today's ({today}) Action Items\n\n{actions_content}"
@@ -157,25 +147,9 @@ def _update_wiki_pages(report_content: str, tier: str) -> dict:
     results = {}
 
     pages_to_update = {
-        "open_loops.md": (
-            "You are maintaining an 'Open Loops' tracking page. "
-            "Review the report and:\n"
-            "1. Add newly mentioned action items: `- [YYYY-MM-DD] <item>`\n"
-            "2. Close resolved items: `- [CLOSED YYYY-MM-DD] ~~<item>~~`\n"
-            "3. Never delete items. Return the complete updated page."
-        ),
-        "goals.md": (
-            "You are maintaining a 'Goals' page tracking the user's evolving goals. "
-            "Review the report and update goals — add new ones, mark completed ones, "
-            "update progress on existing ones. Be concise and structured. "
-            "Return the complete updated page including frontmatter."
-        ),
-        "patterns.md": (
-            "You are maintaining a 'Patterns' page tracking recurring themes, habits, "
-            "and thinking patterns. Review the report and update — add new patterns, "
-            "strengthen recurring ones, note contradictions. "
-            "Return the complete updated page including frontmatter."
-        ),
+        "open_loops.md": LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["open_loops"],
+        "goals.md": LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["goals"],
+        "patterns.md": LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["patterns"],
     }
 
     for filename, system_prompt in pages_to_update.items():
