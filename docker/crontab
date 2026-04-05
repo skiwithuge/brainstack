@@ -1,0 +1,14 @@
+# Brainstack Scheduler Crontab
+# All times are UTC — adjust if your timezone differs
+
+# Daily Second Brain — 11:59 PM
+59 23 * * * cd /opt/brainstack && /usr/local/bin/python summarizer.py >> /var/log/brainstack_cron.log 2>&1
+
+# Weekly Memory Report — 11:00 PM every Sunday
+0 23 * * 0 cd /opt/brainstack && /usr/local/bin/python weekly.py >> /var/log/brainstack_cron.log 2>&1
+
+# Monthly Memory Report — 10:00 PM on the 1st of each month
+0 22 1 * * cd /opt/brainstack && /usr/local/bin/python monthly.py >> /var/log/brainstack_cron.log 2>&1
+
+# Annual Memory Report — 9:00 PM on January 1st
+0 21 1 1 * cd /opt/brainstack && /usr/local/bin/python annual.py >> /var/log/brainstack_cron.log 2>&1

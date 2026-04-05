@@ -1,6 +1,80 @@
 # Proxmox LXC Deployment Guide
 
-This guide walks you through deploying the Telegram "Second Brain" Bot into a 24/7 standalone Proxmox LXC (Linux Container).
+This guide covers two deployment methods: **Docker Compose** (recommended, self-contained) and a **bare-metal Proxmox LXC** setup.
+
+---
+
+## 🐳 Docker Compose Deployment (Recommended)
+
+This is the simplest and most portable way to run Brainstack. All three services run as isolated containers with no impact on the host machine.
+
+### Services
+
+| Container | Role |
+|---|---|
+| `brainstack-bot` | Telegram bot — records and transcribes voice notes 24/7 |
+| `brainstack-web` | Web viewer — browse and edit notes via browser |
+| `brainstack-scheduler` | Cron daemon — runs daily/weekly/monthly/annual processing |
+
+### Quick Start
+
+```bash
+# 1. Clone and enter the repo
+git clone <YOUR_REPO_URL> brainstack && cd brainstack
+
+# 2. Configure your environment
+cp .env.example .env
+nano .env   # Fill in TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID, GEMINI_API_KEY
+
+# 3. Build and start all containers
+docker compose up -d
+
+# 4. Verify all three containers are running
+docker compose ps
+```
+
+### Monitoring Docker Logs
+
+```bash
+# Live logs from all services
+docker compose logs -f
+
+# Scheduler cron output only
+docker compose logs -f brainstack-scheduler
+
+# Bot activity only
+docker compose logs -f brainstack-bot
+```
+
+### Manual Reprocessing (Docker)
+
+```bash
+# Reprocess a specific day
+docker exec brainstack_scheduler python summarizer.py 2026-04-02
+
+# Trigger weekly report manually
+docker exec brainstack_scheduler python weekly.py
+
+# Trigger monthly report manually
+docker exec brainstack_scheduler python monthly.py
+```
+
+### Cron Schedule (UTC)
+
+The `brainstack-scheduler` container runs all jobs automatically:
+
+| Job | Schedule |
+|---|---|
+| Daily summary | 11:59 PM every night |
+| Weekly report + memory wiki | 11:00 PM every Sunday |
+| Monthly report + memory wiki | 10:00 PM on the 1st |
+| Annual report + memory wiki | 9:00 PM on January 1st |
+
+To customise the schedule, edit `docker/crontab` and rebuild: `docker compose build brainstack-scheduler`.
+
+---
+
+## 🖥️ Proxmox LXC Deployment (Bare Metal)
 
 ## 1. Create the Container in Proxmox
 1. Open your Proxmox Web GUI.

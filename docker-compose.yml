@@ -20,3 +20,14 @@ services:
     volumes:
       - ./Notes:/opt/brainstack/Notes
       - ./.env:/opt/brainstack/.env
+
+  brainstack-scheduler:
+    build: .
+    container_name: brainstack_scheduler
+    restart: always
+    env_file: .env
+    command: bash docker/start_scheduler.sh
+    volumes:
+      - ./Notes:/opt/brainstack/Notes
+      - ./.env:/opt/brainstack/.env
+
