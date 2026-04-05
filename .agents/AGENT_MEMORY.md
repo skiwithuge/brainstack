@@ -5,79 +5,63 @@ This document serves as the persistent memory and "building flow" tracker for au
 
 ## Project Origin
 - **Initial Setup:** The project started as a dual-script setup (`bot.py` and `summarizer.py`).
-- **Refactoring (Current State):** Transitioning to a highly modular, agent-oriented skeleton enforced by a zero-dependency verification script to preserve determinism.
+- **Refactoring (Current State):** Highly modular agent-safe skeleton with memory system, enforced by `verify.sh`.
 
 ## Action Log
 
 ### [2026-03-31] Agent-Oriented Project Restructuring Initiation
 **Goal:** Transition codebase into a mature, agent-safe skeleton.
 **Structural Decisions:**
-- Created `.agent_rules.md` to dictate all agent behavior mechanically.
-- Enforced a rule that all execution must happen inside the `venv` to prevent global pollution.
-- Re-architected code from single monoliths into isolated functional modules (`/src/telegram`, `/src/audio`, `/src/llm`, `/src/core`).
-- Adopted `unittest` based functional tests as the determinant of success (`scripts/verify.sh`).
-**Dependencies:** No new external external dependencies added.
+- Created `.agent_rules.md`. Enforced venv execution. Re-architected into `/src` modules. Adopted `unittest` tests.
+**Dependencies:** None.
 
 ### [2026-03-31] Second Brain Feature Implementation
-**Goal:** Upgrade the passive summarizer into a multi-persona intelligence engine processing Lineage, Actions, Drafts, and Analysis.
+**Goal:** Upgrade passive summarizer into multi-persona intelligence engine.
 **Structural Decisions:**
-- Created `src/llm/parser.py` using Regex to cleanly split the massive single output.
-- Overhauled `summarizer_service.py` system prompt to strictly enforce the split boundaries.
-- Adhered strictly to `verify.sh` requirements by implementing `test_parser_success` and `test_parser_failsafe` tests in `test_functional.py`.
+- `src/llm/parser.py` with Regex splitting. Strict 4-section system prompt. Parser tests in `verify.sh`.
 **Dependencies:** None.
 
 ### [2026-04-02] FastAPI Web Viewer Integration
-**Goal:** Add a password-protected web UI for traversing and editing the generated markdown notes.
+**Goal:** Add password-protected web UI for traversing and editing notes.
 **Structural Decisions:**
-- Developed `src/web/server.py` utilizing FastAPI and Jinja2 templates.
-- Enforced HTTP Basic Auth globally through a `WEB_PASSWORD` dependency.
-- Maintained a strict zero-JS, static approach for HTML editing views.
-**Security/State:** Handled `python-multipart` bug and `TemplateResponse` dict unhashable errors successfully. Handled security via local systemd unit `brainstack-web`.
+- `src/web/server.py` with FastAPI + Jinja2. HTTP Basic Auth via `WEB_PASSWORD`. Zero-JS editing.
+**Security/State:** Fixed `python-multipart` and `TemplateResponse` bugs.
 
 ### [2026-04-02] Open Source Docker Package
-**Goal:** Restructure the deployment pipeline to permit open-source one-click Docker deployments.
+**Goal:** One-click Docker deployment for public release.
 **Structural Decisions:**
-- Authored a `Dockerfile` with multi-process capabilities, mapping to a `docker-compose.yml` resolving as `brainstack-bot` and `brainstack-web`.
-- Developed `CONTRIBUTING.md` and overhauled `README.md` into a Github landing page.
-**Security/State:** Severely clamped down git leakage by isolating `.env` and `Notes/` paths inside `.gitignore` and `.dockerignore`.
+- `Dockerfile` + `docker-compose.yml` with `brainstack-bot` and `brainstack-web` services. `CONTRIBUTING.md` and `README.md` overhauled.
+**Security/State:** `.gitignore` and `.dockerignore` lock out `.env` and `Notes/`.
 
 ### [2026-04-02] Agent Memory Workflow Enforcement
-**Goal:** Protect AI Context tracking by migrating into a formal Workflow constraint system.
+**Goal:** Protect AI context tracking via formal workflow system.
 **Structural Decisions:**
-- Created the local `.agents/` namespace to stash AI system files.
-- Drafted `.agents/workflows/update-memory.md` to hijack agent execution states before completion.
-- Scrapped loose textual requirements inside `.agent_rules.md`.
-**Security/State:** N/A.
+- Created `.agents/` namespace. `update-memory.md` workflow. Removed loose text rules from `.agent_rules.md`.
 
 ### [2026-04-02] Internationalization (i18n) Locale Integration
-**Goal:** Abstract hardcoded Italian strings out of the LLM prompt and Regex parser to support Open Source adoption.
+**Goal:** Abstract hardcoded Italian strings for open-source adoption.
 **Structural Decisions:**
-- Added `APP_LANGUAGE` to `.env` falling back gracefully to `"en"`.
-- Extracted literal string rules into a mapping dict inside `src/core/locales.py`.
-- Altered `tests/test_functional.py` to loop over both English and Italian dictionaries to assert total parser stability across both configurations.
-**Security/State:** All syntax validation verified perfectly.
+- `APP_LANGUAGE` env var (default `en`). `src/core/locales.py` mapping dict. Dual-language parser tests.
 
-### [2026-04-02] Underlying AI Model Upgrades
-**Goal:** Research and upgrade the underlying Gemini connection to the current state-of-the-art model series.
+### [2026-04-02] Docker Compose V2 + Model Fixes
+**Goal:** Resolve Docker warnings and API model string issues.
 **Structural Decisions:**
-- Replaced deprecated `gemini-2.5-flash` calls with the latest stable release `gemini-3-flash` across all agent modules. 
-**Security/State:** N/A.
-
-### [2026-04-02] Docker Compose V2 Compatibility Update
-**Goal:** Resolve warnings regarding deprecated compose syntax tags gracefully.
-**Structural Decisions:**
-- Erased the deprecated `version` metadata header from `docker-compose.yml`, shifting entirely into modern native Compose specifications to prevent user annoyance.
-**Security/State:** N/A.
-
-### [2026-04-03] Gemini Model Reversion
-**Goal:** Ensure stable API operation across all developer accounts.
-**Structural Decisions:**
-- Reverted the API endpoint string back to `gemini-2.5-flash` since `gemini-3-flash` acts as a marketing term and causes 404 missing endpoint errors on the v1beta API tier.
-**Security/State:** N/A.
+- Removed deprecated `version` key from `docker-compose.yml`.
+- Reverted `gemini-3-flash` to `gemini-2.5-flash` (API v1beta endpoint not yet available).
 
 ### [2026-04-03] Historical Summarizer Processing
-**Goal:** Allow developers to easily trigger the daily summarizer for a past date when an API failure skips the cron job.
+**Goal:** Allow reprocessing of past days after an API failure.
 **Structural Decisions:**
-- Injected a `sys.argv` listener inside `summarizer.py`.
-- Passed the `target_date` string downward into `run_summarizer()` preventing hardcoded default overrides.
-**Security/State:** N/A.
+- `summarizer.py` accepts optional `sys.argv[1]` date string, passed to `run_summarizer(target_date)`.
+
+### [2026-04-05] Memory System — Full Implementation
+**Goal:** Build a Karpathy-inspired LLM wiki memory system with tiered periodic reports.
+**Structural Decisions:**
+- **Raw isolation (A1):** `save_note()` now writes to `Notes/YYYY-MM-DD/raw/`. Glob updated to `raw/*_note.md`.
+- **MEMORY_DIR:** `src/core/config.py` adds `MEMORY_DIR = os.path.join(NOTES_DIR, "memory")`. Gitignored by inheritance.
+- **wiki_service:** `src/llm/wiki_service.py` — `init_memory()`, `update_from_daily()`, `update_from_weekly()`, `update_from_monthly()`. Guard aborts LLM writes < 50% of original. Log is append-only.
+- **Tiered services:** `weekly_service.py`, `monthly_service.py`, `annual_service.py` + CLI entry points `weekly.py`, `monthly.py`, `annual.py` (all accept optional date arg).
+- **Proactive nudge:** Weekly run scans `open_loops.md` for items > 7 days old → Telegram notification.
+- **Tests added:** `test_wiki_init`, `test_wiki_init_idempotent`, `test_stale_loop_detection`, `test_wiki_guard` — all passing (7/7 total).
+**Dependencies:** None new (reuses `google-genai`, `requests`).
+**Privacy:** `Notes/memory/` is gitignored — never pushed to GitHub.

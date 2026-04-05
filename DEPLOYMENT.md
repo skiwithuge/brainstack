@@ -52,17 +52,85 @@ To see the live bot logs and ensure it is working:
 journalctl -fu brainstack
 ```
 
-## 4. Schedule the Nightly "Second Brain" Summarizer
-The bot is now recording and transcribing locally 24/7. Now we need to tell the server to run the Gemini analysis automatically every night just before midnight.
+## 4. Configuration Options
 
-1. Open the cron editor:
+Before starting, review your `.env` file — key options:
+
+| Variable | Default | Description |
+|---|---|---|
+| `TELEGRAM_BOT_TOKEN` | *(required)* | Your Telegram bot token |
+| `AUTHORIZED_USER_ID` | *(required)* | Your Telegram numeric user ID |
+| `GEMINI_API_KEY` | *(required)* | Your Google Gemini API key |
+| `WEB_PASSWORD` | `brainstack` | Password for the web viewer |
+| `APP_LANGUAGE` | `en` | Language for LLM output (`en` or `it`) |
+| `WHISPER_MODEL_SIZE` | `small` | Whisper model size (`tiny`, `small`, `medium`) |
+
+## 5. Schedule All Automated Jobs
+
+The bot records 24/7. Use `cron` to schedule all automated processing jobs.
+
+Open the cron editor:
 ```bash
 crontab -e
 ```
-2. Paste this exact line at the very bottom of the file to run the script at 11:59 PM every night:
+
+Paste these lines at the bottom:
+
 ```bash
+# Daily Second Brain — runs at 11:59 PM every night
 59 23 * * * cd /opt/brainstack && /opt/brainstack/venv/bin/python summarizer.py >> /var/log/brainstack_cron.log 2>&1
+
+# Weekly Memory Report — runs at 11:00 PM every Sunday
+0 23 * * 0 cd /opt/brainstack && /opt/brainstack/venv/bin/python weekly.py >> /var/log/brainstack_cron.log 2>&1
+
+# Monthly Memory Report — runs at 10:00 PM on the 1st of each month
+0 22 1 * * cd /opt/brainstack && /opt/brainstack/venv/bin/python monthly.py >> /var/log/brainstack_cron.log 2>&1
+
+# Annual Memory Report — runs at 9:00 PM on January 1st
+0 21 1 1 * cd /opt/brainstack && /opt/brainstack/venv/bin/python annual.py >> /var/log/brainstack_cron.log 2>&1
 ```
-3. Save and exit.
+
+Save and exit.
+
+## 6. Memory System
+
+Brainstack maintains a **private living wiki** at `Notes/memory/` that compounds your self-knowledge over time. This folder is **never pushed to GitHub** — it stays on your server only.
+
+It contains:
+- `open_loops.md` — unresolved action items tracked with dates
+- `goals.md` — your evolving goals (updated weekly)
+- `patterns.md` — recurring thinking themes (updated weekly)
+- `log.md` — append-only audit trail of all memory operations
+
+### Manual Reprocessing
+
+If a scheduled job fails, you can reprocess any past date manually:
+
+```bash
+cd /opt/brainstack
+
+# Reprocess a specific day
+/opt/brainstack/venv/bin/python summarizer.py 2026-04-02
+
+# Reprocess a specific week (pass the Sunday date)
+/opt/brainstack/venv/bin/python weekly.py 2026-04-06
+
+# Reprocess a specific month (pass any date in that month)
+/opt/brainstack/venv/bin/python monthly.py 2026-04-01
+```
+
+### Monitoring
+
+```bash
+# Watch live cron output
+tail -f /var/log/brainstack_cron.log
+
+# Check bot daemon status
+journalctl -fu brainstack
+
+# Check web viewer status
+journalctl -fu brainstack-web
+```
 
 **You are fully deployed! Your Homelab is now your Second Brain.**
+
