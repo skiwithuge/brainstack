@@ -74,3 +74,10 @@ This document serves as the persistent memory and "building flow" tracker for au
 **Structural Decisions:**
 - Reverted the API endpoint string back to `gemini-2.5-flash` since `gemini-3-flash` acts as a marketing term and causes 404 missing endpoint errors on the v1beta API tier.
 **Security/State:** N/A.
+
+### [2026-04-03] Historical Summarizer Processing
+**Goal:** Allow developers to easily trigger the daily summarizer for a past date when an API failure skips the cron job.
+**Structural Decisions:**
+- Injected a `sys.argv` listener inside `summarizer.py`.
+- Passed the `target_date` string downward into `run_summarizer()` preventing hardcoded default overrides.
+**Security/State:** N/A.

@@ -8,6 +8,7 @@ auth_id_str = os.getenv("AUTHORIZED_USER_ID", "")
 AUTHORIZED_USER_ID = int(auth_id_str) if auth_id_str.isdigit() else 0
 
 NOTES_DIR = os.getenv("NOTES_DIR", "./Notes")
+MEMORY_DIR = os.path.join(NOTES_DIR, "memory")
 WHISPER_MODEL_SIZE = os.getenv("WHISPER_MODEL_SIZE", "small")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 WEB_PASSWORD = os.getenv("WEB_PASSWORD", "brainstack")

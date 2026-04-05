@@ -19,13 +19,12 @@ class TestFunctionalPipeline(unittest.TestCase):
         
         self.assertTrue(filename.endswith("_note.md"))
         
-        filepath = os.path.join(folder, filename)
+        filepath = os.path.join(folder, "raw", filename)
         self.assertTrue(os.path.exists(filepath))
         
         with open(filepath, "r", encoding="utf-8") as f:
             content = f.read()
             self.assertEqual(content, content_str)
-            
             
         # Clean up
         os.remove(filepath)
@@ -65,5 +64,85 @@ class TestFunctionalPipeline(unittest.TestCase):
             res = split_and_save_briefing(raw_text, tmpdir, "TESTDATE")
             self.assertEqual(len(res), 1)
 
+
+class TestWikiService(unittest.TestCase):
+
+    def setUp(self):
+        import tempfile
+        self.tmpdir = tempfile.mkdtemp()
+        # Patch MEMORY_DIR to point to our temp directory
+        import src.core.config as cfg
+        self._orig_memory_dir = cfg.MEMORY_DIR
+        cfg.MEMORY_DIR = self.tmpdir
+        import src.llm.wiki_service as ws
+        ws.MEMORY_DIR = self.tmpdir
+
+    def tearDown(self):
+        import src.core.config as cfg
+        import src.llm.wiki_service as ws
+        cfg.MEMORY_DIR = self._orig_memory_dir
+        ws.MEMORY_DIR = self._orig_memory_dir
+        shutil.rmtree(self.tmpdir, ignore_errors=True)
+
+    def test_wiki_init(self):
+        """Asserts all 4 core wiki pages are created when memory dir is empty."""
+        from src.llm.wiki_service import init_memory
+        init_memory()
+        for page in ("index.md", "goals.md", "patterns.md", "open_loops.md", "log.md"):
+            self.assertTrue(os.path.exists(os.path.join(self.tmpdir, page)),
+                            f"Missing wiki page: {page}")
+
+    def test_wiki_init_idempotent(self):
+        """Calling init_memory twice must not overwrite existing pages."""
+        from src.llm.wiki_service import init_memory
+        init_memory()
+        page_path = os.path.join(self.tmpdir, "goals.md")
+        with open(page_path, "w") as f:
+            f.write("CUSTOM CONTENT")
+        init_memory()
+        with open(page_path) as f:
+            self.assertEqual(f.read(), "CUSTOM CONTENT")
+
+    def test_stale_loop_detection(self):
+        """Asserts stale loop detection only flags items older than threshold."""
+        import src.llm.wiki_service as ws
+        from datetime import datetime, timedelta
+        
+        old_date = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
+        new_date = (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%d")
+        
+        content = (
+            "---\nlast_updated: 2026-01-01\n---\n\n# Open Loops\n\n"
+            f"- [{old_date}] Buy milk\n"
+            f"- [{new_date}] Call dentist\n"
+            f"- [CLOSED {new_date}] ~~Old closed item~~\n"
+        )
+        with open(os.path.join(self.tmpdir, "open_loops.md"), "w") as f:
+            f.write(content)
+
+        stale = ws.get_stale_loops(threshold_days=7)
+        self.assertEqual(len(stale), 1)
+        self.assertIn("Buy milk", stale[0])
+
+    def test_wiki_guard(self):
+        """Asserts update is aborted when LLM response is suspiciously short."""
+        import src.llm.wiki_service as ws
+        
+        original_content = "x" * 1000
+        short_response = "x" * 100  # < 50% of original
+
+        page_path = os.path.join(self.tmpdir, "goals.md")
+        with open(page_path, "w") as f:
+            f.write(original_content)
+
+        result = ws._write_page("goals.md", short_response, original_content)
+        self.assertFalse(result)
+
+        # File should be unchanged
+        with open(page_path) as f:
+            self.assertEqual(f.read(), original_content)
+
+
 if __name__ == '__main__':
     unittest.main()
+

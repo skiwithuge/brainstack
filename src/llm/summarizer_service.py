@@ -7,6 +7,7 @@ from google import genai
 
 from src.core.config import GEMINI_API_KEY, NOTES_DIR, TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID, APP_LANGUAGE, validate_summarizer_config
 from src.llm.parser import split_and_save_briefing
+from src.llm import wiki_service
 from src.core.locales import LOCALES
 
 logger = logging.getLogger(__name__)
@@ -35,7 +36,7 @@ def run_summarizer(target_date: str = None):
         logger.info(f"No folder found for date ({date_str}). Nothing to summarize.")
         return
 
-    search_pattern = os.path.join(folder_path, "*_note.md")
+    search_pattern = os.path.join(folder_path, "raw", "*_note.md")
     note_files = sorted(glob.glob(search_pattern))
 
     if not note_files:
@@ -75,6 +76,10 @@ def run_summarizer(target_date: str = None):
         
         if len(saved_files) == 4:
             send_telegram_message(f"✅ **Daily Second Brain processing complete!**\nSeparated into Lineage, Actions, Drafts, and Analysis.")
+            # Update memory wiki from today's actions
+            actions_file = next((f for f in saved_files if f.endswith("_actions.md")), None)
+            if actions_file:
+                wiki_service.update_from_daily(actions_file)
         else:
             send_telegram_message(f"⚠️ **Daily processing complete!**\nFallback briefing triggered (hallucinated headers).")
 
