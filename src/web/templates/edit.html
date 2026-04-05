@@ -1,28 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit: {{ filename }}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
-        .nav { margin-bottom: 1rem; display: flex; align-items: center; }
-        a { color: #0066cc; text-decoration: none; margin-right: 15px; }
-        textarea { width: 100%; height: 75vh; font-family: monospace; padding: 15px; font-size: 15px; border: 1px solid #ccc; box-sizing: border-box; resize: vertical; border-radius: 4px; line-height: 1.5; background: #fafafa; }
-        textarea:focus { outline: none; border-color: #0066cc; background: #fff; }
-        .btn { margin-top: 15px; padding: 10px 20px; background: #0066cc; color: white; border: none; cursor: pointer; border-radius: 4px; font-size: 16px; font-weight: bold; width: 100%; }
-        .btn:hover { background: #0055aa; }
-        .meta { color:#888; margin-left: auto; font-size: 0.9em; }
-    </style>
-</head>
-<body>
-    <div class="nav">
-        <a href="/view/{{ file_path }}">← Annulla</a>
-        <span class="meta">Modificando: {{ file_path }}</span>
-    </div>
-    <form method="POST" action="/edit/{{ file_path }}">
-        <textarea name="content" required>{{ content }}</textarea>
-        <br>
-        <button type="submit" class="btn">💾 Salva</button>
-    </form>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Edit: {{ filename }} — Brainstack{% endblock %}
+{% block content %}
+
+<div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+    <a href="/view/{{ file_path }}" class="back-link" style="margin-bottom:0;">← Cancel</a>
+    <span style="font-size:0.82rem; color:var(--text-muted); flex:1;">{{ file_path }}</span>
+</div>
+
+<form method="POST" action="/edit/{{ file_path }}">
+    <textarea name="content" required>{{ content }}</textarea>
+    <button type="submit" class="save-btn">💾 Save</button>
+</form>
+
+{% endblock %}

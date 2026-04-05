@@ -1,34 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ file_path }}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; line-height: 1.6; color: #333; }
-        .nav { margin-bottom: 2rem; border-bottom: 1px solid #ddd; padding-bottom: 1rem; display: flex; align-items: center; }
-        a { color: #0066cc; text-decoration: none; margin-right: 15px; }
-        a:hover { text-decoration: underline; }
-        .btn { background: #eee; padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.9em; font-weight: 500; color: #333; }
-        .btn:hover { background: #e0e0e0; text-decoration: none; }
-        .content { margin-top: 2rem; padding-bottom: 4rem; }
-        h1, h2, h3 { color: #111; margin-top: 1.5em; margin-bottom: 0.5em; }
-        h1:first-child, h2:first-child { margin-top: 0; }
-        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
-        code { background: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: monospace; font-size: 0.9em; }
-        pre code { padding: 0; background: transparent; }
-        blockquote { border-left: 4px solid #0066cc; margin: 0; padding-left: 15px; color: #555; background: #f9f9f9; padding-top: 5px; padding-bottom: 5px; }
-        img { max-width: 100%; height: auto; }
-        .meta-text { color:#888; font-size: 0.9em; margin-left: auto; }
-    </style>
-</head>
-<body>
-    <div class="nav">
-        <a href="/">← Indietro</a>
-        <a href="/edit/{{ file_path }}" class="btn">✏️ Modifica</a>
-        <span class="meta-text">{{ file_path }}</span>
-    </div>
-    <div class="content">
-        {{ content | safe }}
-    </div>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}{{ filename }} — Brainstack{% endblock %}
+{% block content %}
+
+<style>
+    .view-nav { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.75rem; flex-wrap: wrap; }
+    .breadcrumb { font-size: 0.82rem; color: var(--text-muted); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+</style>
+
+<div class="view-nav">
+    <a href="javascript:history.back()" class="back-link" style="margin-bottom:0;">← Back</a>
+    <span class="breadcrumb">{{ file_path }}</span>
+    <a href="/edit/{{ file_path }}" class="btn btn-ghost">✏️ Edit</a>
+</div>
+
+<div class="card">
+    <div class="prose">{{ content | safe }}</div>
+</div>
+
+{% endblock %}

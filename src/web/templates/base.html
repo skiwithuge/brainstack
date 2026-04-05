@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Brainstack{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #080810;
+            --surface: #11111c;
+            --surface-2: #1a1a28;
+            --border: #28283c;
+            --accent: #7c6af7;
+            --accent-dim: rgba(124,106,247,0.12);
+            --accent-glow: rgba(124,106,247,0.25);
+            --text: #e2e2ec;
+            --text-muted: #6b6b88;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --radius: 14px;
+            --radius-sm: 9px;
+            --nav-h: 58px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* ── Nav ── */
+        .nav {
+            position: sticky; top: 0; z-index: 100;
+            height: var(--nav-h);
+            background: rgba(8,8,16,0.88);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center;
+            padding: 0 1.25rem; gap: 1rem;
+        }
+        .nav-brand {
+            font-weight: 700; font-size: 1rem;
+            color: var(--text); text-decoration: none;
+            white-space: nowrap;
+            display: flex; align-items: center; gap: 0.35rem;
+        }
+        .nav-brand:hover { text-decoration: none; }
+        .nav-sep { color: var(--border); flex-shrink: 0; }
+        .nav-items {
+            display: flex; gap: 0.2rem;
+            overflow-x: auto; scrollbar-width: none;
+            -ms-overflow-style: none; flex: 1;
+        }
+        .nav-items::-webkit-scrollbar { display: none; }
+        .nav-item {
+            text-decoration: none; color: var(--text-muted);
+            padding: 0.38rem 0.8rem; border-radius: 99px;
+            font-size: 0.85rem; font-weight: 500;
+            white-space: nowrap;
+            transition: color 0.16s, background 0.16s;
+        }
+        .nav-item:hover { color: var(--text); background: var(--surface-2); text-decoration: none; }
+        .nav-item.active { color: var(--accent); background: var(--accent-dim); }
+
+        /* ── Layout ── */
+        .main {
+            max-width: 980px; margin: 0 auto;
+            padding: 2rem 1.25rem 5rem;
+        }
+        .page-header { margin-bottom: 2rem; }
+        .page-header h1 { font-size: 1.55rem; font-weight: 700; }
+        .page-header p { color: var(--text-muted); margin-top: 0.3rem; font-size: 0.9rem; }
+
+        /* ── Cards ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .card:hover { border-color: rgba(124,106,247,0.5); box-shadow: 0 0 0 3px var(--accent-dim); }
+        .card-label {
+            font-size: 0.7rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--text-muted); margin-bottom: 0.9rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .card-label::after {
+            content: ''; flex: 1; height: 1px; background: var(--border);
+        }
+
+        /* ── List items ── */
+        .list-item {
+            display: flex; align-items: center; gap: 0.8rem;
+            padding: 0.8rem 0.9rem; border-radius: var(--radius-sm);
+            text-decoration: none; color: var(--text);
+            border: 1px solid transparent;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .list-item:hover {
+            background: var(--surface-2); border-color: var(--border);
+            text-decoration: none;
+        }
+        .list-item-icon { font-size: 1rem; flex-shrink: 0; width: 1.4rem; text-align: center; }
+        .list-item-main { flex: 1; min-width: 0; }
+        .list-item-title { font-weight: 500; font-size: 0.93rem; }
+        .list-item-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+        .list-item-arrow { color: var(--text-muted); font-size: 0.8rem; flex-shrink: 0; }
+
+        /* ── Badge ── */
+        .badge {
+            display: inline-block; padding: 0.12rem 0.5rem;
+            border-radius: 99px; font-size: 0.7rem; font-weight: 600;
+            background: var(--surface-2); color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+        .badge-accent { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-glow); }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.5rem 1rem; border-radius: var(--radius-sm);
+            font-size: 0.87rem; font-weight: 600; cursor: pointer;
+            transition: opacity 0.16s, background 0.16s, border-color 0.16s;
+            text-decoration: none; border: none;
+        }
+        .btn:hover { text-decoration: none; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { opacity: 0.85; }
+        .btn-ghost { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+        .btn-ghost:hover { border-color: var(--accent); }
+
+        /* ── Back link ── */
+        .back-link {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            color: var(--text-muted); font-size: 0.87rem;
+            margin-bottom: 1.5rem; text-decoration: none;
+            transition: color 0.15s;
+        }
+        .back-link:hover { color: var(--text); text-decoration: none; }
+
+        /* ── Divider ── */
+        .divider { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+
+        /* ── Section divider ── */
+        .section-title {
+            font-size: 0.75rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.09em;
+            color: var(--text-muted); margin: 2rem 0 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* ── Prose (markdown output) ── */
+        .prose { color: var(--text); line-height: 1.75; font-size: 0.95rem; }
+        .prose h1,.prose h2,.prose h3 { color: var(--text); margin: 1.5em 0 0.5em; line-height: 1.3; }
+        .prose h1 { font-size: 1.45rem; }
+        .prose h2 { font-size: 1.2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+        .prose h3 { font-size: 1.05rem; }
+        .prose h1:first-child,.prose h2:first-child { margin-top: 0; }
+        .prose p { margin: 0.7em 0; }
+        .prose ul,.prose ol { padding-left: 1.5rem; margin: 0.7em 0; }
+        .prose li { margin: 0.25em 0; }
+        .prose code {
+            background: var(--surface-2); padding: 0.15em 0.4em;
+            border-radius: 5px; font-family: 'JetBrains Mono',monospace;
+            font-size: 0.84em; border: 1px solid var(--border);
+        }
+        .prose pre {
+            background: var(--surface-2); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); padding: 1rem; overflow-x: auto; margin: 1em 0;
+        }
+        .prose pre code { background: none; padding: 0; border: none; }
+        .prose blockquote {
+            border-left: 3px solid var(--accent); padding-left: 1rem;
+            color: var(--text-muted); margin: 1em 0; font-style: italic;
+        }
+        .prose a { color: var(--accent); }
+        .prose hr { border: none; border-top: 1px solid var(--border); margin: 1.5em 0; }
+        .prose del { color: var(--text-muted); text-decoration: line-through; }
+        .prose strong { color: var(--text); font-weight: 600; }
+
+        /* ── Empty state ── */
+        .empty {
+            text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);
+        }
+        .empty-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .empty-text { font-size: 0.9rem; }
+
+        /* ── details/summary (raw notes disclosure) ── */
+        details summary {
+            cursor: pointer; list-style: none;
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.7rem 0.9rem; border-radius: var(--radius-sm);
+            color: var(--text-muted); font-size: 0.85rem; font-weight: 500;
+            border: 1px dashed var(--border);
+            transition: border-color 0.15s, color 0.15s;
+            user-select: none;
+        }
+        details summary::-webkit-details-marker { display: none; }
+        details summary:hover { border-color: var(--text-muted); color: var(--text); }
+        details[open] summary { border-style: solid; border-color: var(--border); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+        .raw-list {
+            border: 1px solid var(--border); border-top: none;
+            border-bottom-left-radius: var(--radius-sm); border-bottom-right-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+        .raw-list .list-item { border-radius: 0; border: none; border-bottom: 1px solid var(--border); }
+        .raw-list .list-item:last-child { border-bottom: none; }
+
+        /* ── Textarea / edit ── */
+        textarea {
+            width: 100%; min-height: 72vh; font-family: 'JetBrains Mono', 'Courier New', monospace;
+            padding: 1rem; font-size: 0.9rem; line-height: 1.6;
+            background: var(--surface); color: var(--text); border: 1px solid var(--border);
+            border-radius: var(--radius); resize: vertical; outline: none;
+            transition: border-color 0.15s;
+        }
+        textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+        .save-btn {
+            margin-top: 1rem; padding: 0.7rem 1.5rem;
+            background: var(--accent); color: white; border: none;
+            border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 600;
+            cursor: pointer; width: 100%; transition: opacity 0.15s;
+        }
+        .save-btn:hover { opacity: 0.85; }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            .main { padding: 1.25rem 0.9rem 4rem; }
+            .page-header h1 { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="/" class="nav-brand">🧠 Brainstack</a>
+        <span class="nav-sep">|</span>
+        <div class="nav-items">
+            <a href="/" class="nav-item {% if active=='home' %}active{% endif %}">🏠 Home</a>
+            <a href="/memory" class="nav-item {% if active=='memory' %}active{% endif %}">🧠 Memory</a>
+            <a href="/daily" class="nav-item {% if active=='daily' %}active{% endif %}">📅 Daily</a>
+            <a href="/reports" class="nav-item {% if active=='reports' %}active{% endif %}">📊 Reports</a>
+        </div>
+    </nav>
+    <main class="main">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

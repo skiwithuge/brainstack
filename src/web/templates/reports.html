@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Reports — Brainstack{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <h1>📊 Reports</h1>
+    <p>Synthesized memory reports across all time horizons</p>
+</div>
+
+{% if not weekly and not monthly and not annual %}
+    <div class="empty" style="margin-top: 3rem;">
+        <div class="empty-icon">📆</div>
+        <div class="empty-text">No reports generated yet.<br>Run <code style="background:var(--surface-2);padding:0.15em 0.4em;border-radius:4px;">python weekly.py</code> to generate your first report.</div>
+    </div>
+{% else %}
+
+    {% if weekly %}
+        <div class="section-title">📅 Weekly</div>
+        {% for r in weekly %}
+            <a href="/view/{{ r.file_path }}" class="list-item">
+                <span class="list-item-icon">📅</span>
+                <div class="list-item-main">
+                    <div class="list-item-title">{{ r.name }}</div>
+                </div>
+                <span class="list-item-arrow">›</span>
+            </a>
+        {% endfor %}
+    {% endif %}
+
+    {% if monthly %}
+        <div class="section-title">🗓️ Monthly</div>
+        {% for r in monthly %}
+            <a href="/view/{{ r.file_path }}" class="list-item">
+                <span class="list-item-icon">🗓️</span>
+                <div class="list-item-main">
+                    <div class="list-item-title">{{ r.name }}</div>
+                </div>
+                <span class="list-item-arrow">›</span>
+            </a>
+        {% endfor %}
+    {% endif %}
+
+    {% if annual %}
+        <div class="section-title">🏛️ Annual</div>
+        {% for r in annual %}
+            <a href="/view/{{ r.file_path }}" class="list-item">
+                <span class="list-item-icon">🏛️</span>
+                <div class="list-item-main">
+                    <div class="list-item-title">{{ r.name }}</div>
+                </div>
+                <span class="list-item-arrow">›</span>
+            </a>
+        {% endfor %}
+    {% endif %}
+
+{% endif %}
+
+{% endblock %}

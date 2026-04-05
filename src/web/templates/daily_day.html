@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ date_str }} — Brainstack{% endblock %}
+{% block content %}
+
+<a href="/daily" class="back-link">← Daily Notes</a>
+
+<div class="page-header">
+    <h1>{{ date_str }}</h1>
+    <p>
+        {{ artifacts | length }} artifact{% if artifacts | length != 1 %}s{% endif %} processed
+        {% if raw_files %}· {{ raw_files | length }} raw note{% if raw_files | length != 1 %}s{% endif %}{% endif %}
+    </p>
+</div>
+
+{% if artifacts %}
+    {% for a in artifacts %}
+        <a href="/view/{{ a.file_path }}" class="list-item">
+            <span class="list-item-icon">{{ a.icon }}</span>
+            <div class="list-item-main">
+                <div class="list-item-title">{{ a.label }}</div>
+                <div class="list-item-sub">{{ a.filename }}</div>
+            </div>
+            <span class="list-item-arrow">›</span>
+        </a>
+    {% endfor %}
+{% else %}
+    <div class="empty" style="padding: 2rem 0;">
+        <div class="empty-icon">⏳</div>
+        <div class="empty-text">No artifacts generated yet for this day</div>
+    </div>
+{% endif %}
+
+<!-- Raw notes: secondary, collapsed by default -->
+{% if raw_files %}
+    <div style="margin-top: 2rem;">
+        <details>
+            <summary>
+                <span>🎙️</span>
+                <span>Raw transcripts ({{ raw_files | length }})</span>
+                <span style="margin-left: auto; font-size: 0.78rem;">expand ›</span>
+            </summary>
+            <div class="raw-list">
+                {% for rf in raw_files %}
+                    <a href="/view/{{ rf.file_path }}" class="list-item">
+                        <span class="list-item-icon">📼</span>
+                        <div class="list-item-main">
+                            <div class="list-item-title">{{ rf.name | replace('_note.md', '') | replace('_', ':') }}</div>
+                        </div>
+                        <span class="list-item-arrow">›</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </details>
+    </div>
+{% endif %}
+
+{% endblock %}

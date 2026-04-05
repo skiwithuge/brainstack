@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Home — Brainstack{% endblock %}
+{% block content %}
+
+<style>
+    .dash-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+        gap: 1rem;
+        align-items: start;
+    }
+    @media (max-width: 768px) {
+        .dash-grid { grid-template-columns: 1fr; }
+        .dash-today { order: 2; }
+        .dash-loops { order: 1; }
+        .dash-weekly { order: 3; }
+    }
+    .artifact-link {
+        display: flex; align-items: center; gap: 0.7rem;
+        padding: 0.65rem 0.75rem; border-radius: var(--radius-sm);
+        text-decoration: none; color: var(--text);
+        transition: background 0.14s; font-size: 0.9rem;
+    }
+    .artifact-link:hover { background: var(--surface-2); text-decoration: none; }
+    .artifact-link .icon { font-size: 0.95rem; width: 1.3rem; text-align: center; }
+    .loops-scroll { max-height: 380px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    .loops-scroll::-webkit-scrollbar { width: 4px; }
+    .loops-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+    .weekly-link {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0.8rem; background: var(--accent-dim); border: 1px solid var(--accent-glow);
+        border-radius: var(--radius-sm); text-decoration: none; color: var(--accent);
+        font-weight: 600; font-size: 0.88rem; transition: opacity 0.15s;
+    }
+    .weekly-link:hover { opacity: 0.8; text-decoration: none; }
+</style>
+
+<div class="page-header">
+    <h1>Good {{ greeting }}, here's your brain 🧠</h1>
+    <p>{{ today_str }}</p>
+</div>
+
+<div class="dash-grid">
+
+    <!-- Today's Artifacts -->
+    <div class="card dash-today">
+        <div class="card-label">📅 Today</div>
+        {% if today_artifacts %}
+            {% for a in today_artifacts %}
+                <a href="/view/{{ a.file_path }}" class="artifact-link">
+                    <span class="icon">{{ a.icon }}</span>
+                    <span>{{ a.label }}</span>
+                </a>
+            {% endfor %}
+        {% else %}
+            <div class="empty">
+                <div class="empty-icon">🌙</div>
+                <div class="empty-text">No entries yet today</div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Open Loops -->
+    <div class="card dash-loops">
+        <div class="card-label">🔄 Open Loops</div>
+        {% if open_loops_html %}
+            <div class="loops-scroll prose">{{ open_loops_html | safe }}</div>
+        {% else %}
+            <div class="empty">
+                <div class="empty-icon">✨</div>
+                <div class="empty-text">Memory not initialized yet</div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Latest Weekly -->
+    <div class="card dash-weekly">
+        <div class="card-label">📊 Latest Weekly</div>
+        {% if latest_weekly %}
+            <a href="/view/{{ latest_weekly.file_path }}" class="weekly-link">
+                <span>{{ latest_weekly.name }}</span>
+                <span>→</span>
+            </a>
+            <p style="margin-top: 0.75rem; font-size: 0.82rem; color: var(--text-muted);">
+                View full weekly report with insights and patterns.
+            </p>
+        {% else %}
+            <div class="empty">
+                <div class="empty-icon">📆</div>
+                <div class="empty-text">No weekly report yet</div>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}

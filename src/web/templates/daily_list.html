@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Daily Notes — Brainstack{% endblock %}
+{% block content %}
+
+<div class="page-header">
+    <h1>📅 Daily Notes</h1>
+    <p>Browse your processed daily notes by date</p>
+</div>
+
+{% if dates %}
+    {% for entry in dates %}
+        <a href="/daily/{{ entry.date }}" class="list-item">
+            <span class="list-item-icon">📅</span>
+            <div class="list-item-main">
+                <div class="list-item-title">{{ entry.date }}</div>
+                <div class="list-item-sub">
+                    {{ entry.count }} artifact{% if entry.count != 1 %}s{% endif %}
+                    {% if entry.raw_count %}· {{ entry.raw_count }} raw note{% if entry.raw_count != 1 %}s{% endif %}{% endif %}
+                </div>
+            </div>
+            {% if entry.count == 4 %}
+                <span class="badge badge-accent">complete</span>
+            {% elif entry.count > 0 %}
+                <span class="badge">partial</span>
+            {% endif %}
+            <span class="list-item-arrow">›</span>
+        </a>
+    {% endfor %}
+{% else %}
+    <div class="empty" style="margin-top: 3rem;">
+        <div class="empty-icon">🎙️</div>
+        <div class="empty-text">No processed daily notes yet.<br>Send a voice note to the bot to get started.</div>
+    </div>
+{% endif %}
+
+{% endblock %}

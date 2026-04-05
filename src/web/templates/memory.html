@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Memory Wiki — Brainstack{% endblock %}
+{% block content %}
+
+<style>
+    .wiki-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    @media (max-width: 540px) { .wiki-grid { grid-template-columns: 1fr; } }
+    .wiki-card {
+        display: flex; flex-direction: column; gap: 0.5rem;
+        padding: 1.4rem; text-decoration: none; color: var(--text);
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+    }
+    .wiki-card:hover {
+        border-color: var(--accent); text-decoration: none;
+        box-shadow: 0 0 0 3px var(--accent-dim); transform: translateY(-2px);
+    }
+    .wiki-card.unavailable { opacity: 0.45; pointer-events: none; }
+    .wiki-icon { font-size: 1.6rem; }
+    .wiki-name { font-size: 1rem; font-weight: 700; margin-top: 0.25rem; }
+    .wiki-desc { font-size: 0.83rem; color: var(--text-muted); }
+</style>
+
+<div class="page-header">
+    <h1>🧠 Memory Wiki</h1>
+    <p>Living pages that compound your knowledge over time</p>
+</div>
+
+<div class="wiki-grid">
+    {% for page in wiki_pages %}
+        <a href="{{ '/view/' + page.file_path if page.exists else '#' }}"
+           class="wiki-card {% if not page.exists %}unavailable{% endif %}">
+            <div class="wiki-icon">{{ page.icon }}</div>
+            <div class="wiki-name">{{ page.name }}</div>
+            <div class="wiki-desc">{{ page.desc }}</div>
+            {% if not page.exists %}<span class="badge" style="width:fit-content">Not initialized</span>{% endif %}
+        </a>
+    {% endfor %}
+</div>
+
+{% endblock %}
