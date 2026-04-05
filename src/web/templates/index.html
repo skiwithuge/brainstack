@@ -22,11 +22,20 @@
     {% if not tree %}
         <p>No notes found in NOTES_DIR.</p>
     {% else %}
-        {% for date_str, files in tree.items() %}
-            <div class="folder">📅 {{ date_str }}</div>
+        {% for dir_path, files in tree.items() %}
+            <div class="folder">
+                {% if '/raw' in dir_path %}
+                    🎙️
+                {% elif dir_path.startswith('memory') %}
+                    🧠
+                {% else %}
+                    📅
+                {% endif %}
+                {{ dir_path }}
+            </div>
             <ul>
                 {% for file in files %}
-                    <li><a href="/view/{{ date_str }}/{{ file }}">📄 {{ file | replace('.md', '') }}</a></li>
+                    <li><a href="/view/{{ dir_path }}/{{ file }}">📄 {{ file | replace('.md', '') }}</a></li>
                 {% endfor %}
             </ul>
         {% endfor %}

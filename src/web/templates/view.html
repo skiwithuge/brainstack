@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ date_str }} / {{ filename }}</title>
+    <title>{{ file_path }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; line-height: 1.6; color: #333; }
@@ -24,8 +24,8 @@
 <body>
     <div class="nav">
         <a href="/">← Indietro</a>
-        <a href="/edit/{{ date_str }}/{{ filename }}" class="btn">✏️ Modifica</a>
-        <span class="meta-text">{{ date_str }} / {{ filename }}</span>
+        <a href="/edit/{{ file_path }}" class="btn">✏️ Modifica</a>
+        <span class="meta-text">{{ file_path }}</span>
     </div>
     <div class="content">
         {{ content | safe }}

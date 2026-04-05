@@ -16,10 +16,10 @@
 </head>
 <body>
     <div class="nav">
-        <a href="/view/{{ date_str }}/{{ filename }}">← Annulla</a>
-        <span class="meta">Modificando: {{ date_str }} / {{ filename }}</span>
+        <a href="/view/{{ file_path }}">← Annulla</a>
+        <span class="meta">Modificando: {{ file_path }}</span>
     </div>
-    <form method="POST" action="/edit/{{ date_str }}/{{ filename }}">
+    <form method="POST" action="/edit/{{ file_path }}">
         <textarea name="content" required>{{ content }}</textarea>
         <br>
         <button type="submit" class="btn">💾 Salva</button>
