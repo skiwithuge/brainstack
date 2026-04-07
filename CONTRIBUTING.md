@@ -19,3 +19,5 @@ Use our custom verification deploy script:
 ./scripts/commit.sh "Your descriptive commit message"
 ```
 This script will automatically run `scripts/verify.sh` to validate syntax and test logic parsing. If your commit fails the suite, it will be rejected.
+
+> **Important**: You must run the tests and the commit script from within the activated virtual environment (`source venv/bin/activate`) to ensure all dependencies are resolved correctly.

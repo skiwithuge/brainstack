@@ -143,6 +143,34 @@ class TestWikiService(unittest.TestCase):
             self.assertEqual(f.read(), original_content)
 
 
+class TestWebAuth(unittest.TestCase):
+    def setUp(self):
+        from src.web.server import app
+        from fastapi.testclient import TestClient
+        self.client = TestClient(app)
+
+    def test_unauthenticated_redirects(self):
+        response = self.client.get("/", follow_redirects=False)
+        self.assertEqual(response.status_code, 307)
+        self.assertEqual(response.headers.get("location"), "/login")
+
+    def test_login_page_renders(self):
+        response = self.client.get("/login")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Brainstack", response.text)
+        self.assertIn("form", response.text.lower())
+
+    def test_failed_login(self):
+        response = self.client.post("/login", data={"username": "wrong", "password": "pwd"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Invalid", response.text)
+
+    def test_successful_login(self):
+        import src.core.config
+        response = self.client.post("/login", data={"username": "admin", "password": src.core.config.WEB_PASSWORD}, follow_redirects=False)
+        self.assertEqual(response.status_code, 303)
+        self.assertIn("session_id", response.cookies)
+
 if __name__ == '__main__':
     unittest.main()
 

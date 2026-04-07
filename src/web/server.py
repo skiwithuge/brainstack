@@ -7,7 +7,6 @@ from datetime import datetime
 from fastapi import FastAPI, Depends, HTTPException, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import secrets
 
 from src.core.config import NOTES_DIR, MEMORY_DIR, WEB_PASSWORD
@@ -15,8 +14,16 @@ from src.core.config import NOTES_DIR, MEMORY_DIR, WEB_PASSWORD
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Brainstack Web")
-security = HTTPBasic()
 templates = Jinja2Templates(directory="src/web/templates")
+
+SESSION_TOKEN = secrets.token_urlsafe(32)
+
+class RequiresLoginException(Exception):
+    pass
+
+@app.exception_handler(RequiresLoginException)
+async def requires_login_exception_handler(request: Request, exc: RequiresLoginException):
+    return RedirectResponse(url="/login")
 
 _ARTIFACT_DEFS = [
     {"suffix": "_lineage.md",  "label": "Lineage",  "icon": "📋"},
@@ -25,15 +32,33 @@ _ARTIFACT_DEFS = [
     {"suffix": "_analysis.md", "label": "Analysis", "icon": "🔍"},
 ]
 
-def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
-    if not (secrets.compare_digest(credentials.username, "admin") and
-            secrets.compare_digest(credentials.password, WEB_PASSWORD)):
-        raise HTTPException(
-            status_code=401,
-            detail="Incorrect credentials",
-            headers={"WWW-Authenticate": "Basic"},
-        )
-    return credentials.username
+def verify_credentials(request: Request):
+    if request.cookies.get("session_id") != SESSION_TOKEN:
+        raise RequiresLoginException()
+    return "admin"
+
+@app.get("/login", response_class=HTMLResponse)
+async def login_get(request: Request):
+    return templates.TemplateResponse(request=request, name="login.html")
+
+@app.post("/login", response_class=HTMLResponse)
+async def login_post(request: Request, username: str = Form(""), password: str = Form("")):
+    if secrets.compare_digest(username, "admin") and secrets.compare_digest(password, WEB_PASSWORD):
+        response = RedirectResponse(url="/", status_code=303)
+        response.set_cookie(key="session_id", value=SESSION_TOKEN, httponly=True)
+        return response
+    
+    return templates.TemplateResponse(
+        request=request, 
+        name="login.html", 
+        context={"request": request, "error_message": "Invalid username or password"}
+    )
+
+@app.get("/logout")
+async def logout():
+    response = RedirectResponse(url="/login", status_code=303)
+    response.delete_cookie("session_id")
+    return response
 
 def _safe_path(file_path: str) -> str:
     """Resolves file_path under NOTES_DIR and guards against path traversal."""
