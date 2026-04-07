@@ -21,14 +21,13 @@ LOCALES = {
         ),
         "memory_prompts": {
             "open_loops": (
-                "You are a meticulous personal assistant maintaining an 'Open Loops' tracking page. "
-                "You will receive the current open loops page and new action items. "
+                "You are an elite personal assistant maintaining an 'Open Loops' tracking page. "
+                "You will receive the current open loops and new action items. "
                 "Your task:\n"
-                "1. Add new action items with the format: `- [YYYY-MM-DD] <item>`\n"
-                "2. If an item appears resolved, mark it: `- [CLOSED YYYY-MM-DD] ~~<original item>~~`\n"
-                "3. Never delete items — only close them.\n"
-                "4. Preserve all existing content exactly.\n"
-                "5. Respond entirely in English. Return the complete updated page including frontmatter."
+                "1. Maintain a strict MAX limit of 10 open loops. If new items exceed this, ruthlessly drop the least critical or oldest items.\n"
+                "2. Every loop must be formatted perfectly as a concise single line: `- [YYYY-MM-DD] <10-word description max>`. Remove all explanation or conversational fluff.\n"
+                "3. If an item appears resolved, either delete it or mark it closed: `- [CLOSED YYYY-MM-DD] ~~<original item>~~`.\n"
+                "4. Respond entirely in English, and DO NOT output conversational introductions or explanations. Return ONLY the complete updated Markdown page including frontmatter."
             ),
             "goals": (
                 "You are maintaining a 'Goals' page tracking the user's evolving goals. "
@@ -83,14 +82,13 @@ LOCALES = {
         ),
         "memory_prompts": {
             "open_loops": (
-                "Sei un assistente personale meticoloso che gestisce una pagina di 'Cicli Aperti'. "
-                "Riceverai la pagina attuale e nuovi elementi d'azione. "
+                "Sei un assistente personale d'élite che gestisce una pagina di 'Cicli Aperti'. "
+                "Riceverai i cicli attuali e nuovi elementi d'azione. "
                 "Il tuo compito:\n"
-                "1. Aggiungi nuovi elementi con il formato: `- [YYYY-MM-DD] <elemento>`\n"
-                "2. Se un elemento sembra risolto, marcalo: `- [CHIUSO YYYY-MM-DD] ~~<elemento originale>~~`\n"
-                "3. Non eliminare mai gli elementi — solo chiuderli.\n"
-                "4. Preserva tutto il contenuto esistente esattamente.\n"
-                "5. Rispondi interamente in Italiano. Restituisci la pagina completa aggiornata incluso il frontmatter."
+                "1. Mantieni un LIMITE MASSIMO rigido di 10 cicli aperti. Se i nuovi elementi superano questo limite, elimina spietatamente gli elementi meno critici o più vecchi.\n"
+                "2. Ogni ciclo deve essere formattato perfettamente su una singola linea concisa: `- [YYYY-MM-DD] <descrizione di massimo 10 parole>`. Rimuovi ogni spiegazione o rumore verbale.\n"
+                "3. Se un elemento sembra risolto, eliminalo oppure marcalo chiuso: `- [CHIUSO YYYY-MM-DD] ~~<elemento originale>~~`.\n"
+                "4. Rispondi interamente in Italiano e NON produrre introduzioni conversazionali o spiegazioni. Restituisci SOLO la pagina Markdown completa e aggiornata incluso il frontmatter."
             ),
             "goals": (
                 "Stai gestendo una pagina 'Obiettivi' che traccia gli obiettivi in evoluzione dell'utente. "

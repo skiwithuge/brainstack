@@ -79,19 +79,18 @@ def _greeting() -> str:
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request, username: str = Depends(verify_credentials)):
     today_str = datetime.now().strftime("%Y-%m-%d")
-    today_folder = os.path.join(NOTES_DIR, today_str)
-
-    today_artifacts = []
-    for a in _ARTIFACT_DEFS:
-        filename = f"{today_str}{a['suffix']}"
-        if os.path.exists(os.path.join(today_folder, filename)):
-            today_artifacts.append({**a, "filename": filename, "file_path": f"{today_str}/{filename}"})
 
     open_loops_path = os.path.join(MEMORY_DIR, "open_loops.md")
     open_loops_html = None
     if os.path.exists(open_loops_path):
         with open(open_loops_path, "r", encoding="utf-8") as f:
             open_loops_html = markdown.markdown(f.read())
+
+    goals_path = os.path.join(MEMORY_DIR, "goals.md")
+    goals_html = None
+    if os.path.exists(goals_path):
+        with open(goals_path, "r", encoding="utf-8") as f:
+            goals_html = markdown.markdown(f.read())
 
     latest_weekly = None
     weekly_dir = os.path.join(MEMORY_DIR, "weekly")
@@ -108,8 +107,8 @@ async def dashboard(request: Request, username: str = Depends(verify_credentials
         "request": request,
         "active": "home",
         "today_str": today_str,
-        "today_artifacts": today_artifacts,
         "open_loops_html": open_loops_html,
+        "goals_html": goals_html,
         "latest_weekly": latest_weekly,
         "greeting": _greeting(),
     })

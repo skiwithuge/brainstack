@@ -5,14 +5,14 @@
 <style>
     .dash-grid {
         display: grid;
-        grid-template-columns: 1fr 2fr 1fr;
-        gap: 1rem;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1.5rem;
         align-items: start;
     }
     @media (max-width: 768px) {
         .dash-grid { grid-template-columns: 1fr; }
-        .dash-today { order: 2; }
         .dash-loops { order: 1; }
+        .dash-goals { order: 2; }
         .dash-weekly { order: 3; }
     }
     .artifact-link {
@@ -42,20 +42,15 @@
 
 <div class="dash-grid">
 
-    <!-- Today's Artifacts -->
-    <div class="card dash-today">
-        <div class="card-label">📅 Today</div>
-        {% if today_artifacts %}
-            {% for a in today_artifacts %}
-                <a href="/view/{{ a.file_path }}" class="artifact-link">
-                    <span class="icon">{{ a.icon }}</span>
-                    <span>{{ a.label }}</span>
-                </a>
-            {% endfor %}
+    <!-- Goals (Working Desk) -->
+    <div class="card dash-goals">
+        <div class="card-label">🎯 Active Goals</div>
+        {% if goals_html %}
+            <div class="loops-scroll prose">{{ goals_html | safe }}</div>
         {% else %}
             <div class="empty">
-                <div class="empty-icon">🌙</div>
-                <div class="empty-text">No entries yet today</div>
+                <div class="empty-icon">🎯</div>
+                <div class="empty-text">No goals recorded yet</div>
             </div>
         {% endif %}
     </div>
