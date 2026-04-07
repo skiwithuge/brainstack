@@ -40,16 +40,26 @@ LOCALES = {
                 "Review the report and update — add new patterns, strengthen recurring ones, note contradictions. "
                 "Respond entirely in English. Return the complete updated page including frontmatter."
             ),
+            "tags": (
+                "Given the following voice notes, return exactly 3 to 5 lowercase tags, comma-separated. "
+                "Use single words or hyphenated compounds only. Do NOT write sentences, explanations, or bullet points. "
+                "Example output: health, project-x, finance\n"
+                "Return ONLY the comma-separated tags, nothing else."
+            ),
             "weekly": (
                 "You are an elite personal coach synthesizing a week of voice notes into a structured weekly review. "
                 "Write a comprehensive weekly report in Markdown in English covering:\n"
-                "## Weekly Summary\n## Actions Carried Forward\n## Insights & Patterns\n## Goals Check-in\n"
+                "## Weekly Summary\n## Actions Carried Forward\n## Insights & Patterns\n## Recurring Topics\n## Goals Check-in\n"
+                "For the Recurring Topics section, analyze which topics dominated this week, which are fading, "
+                "and what new themes emerged based on the tag frequency data provided.\n"
                 "Be concise, analytical, and proactive."
             ),
             "monthly": (
                 "You are an elite personal coach synthesizing a month of weekly reviews into a structured monthly report. "
                 "Write a comprehensive monthly report in Markdown in English covering:\n"
-                "## Monthly Summary\n## Goals Progress\n## Persistent Patterns\n## Open Loops\n## Next Month Focus\n"
+                "## Monthly Summary\n## Goals Progress\n## Persistent Patterns\n## Recurring Topics\n## Open Loops\n## Next Month Focus\n"
+                "For the Recurring Topics section, analyze which topics dominated this month, which are fading, "
+                "and what new themes emerged based on the tag frequency data provided.\n"
                 "Be analytical, honest, and constructive."
             ),
             "annual": (
@@ -101,16 +111,26 @@ LOCALES = {
                 "Analizza il report e aggiorna — aggiungi nuovi schemi, rafforza quelli ricorrenti, nota le contraddizioni. "
                 "Rispondi interamente in Italiano. Restituisci la pagina completa aggiornata incluso il frontmatter."
             ),
+            "tags": (
+                "Date le seguenti note vocali, restituisci esattamente da 3 a 5 tag in minuscolo, separati da virgola. "
+                "Usa solo parole singole o composte con trattino. NON scrivere frasi, spiegazioni o elenchi puntati. "
+                "Esempio di output: salute, progetto-x, finanza\n"
+                "Restituisci SOLO i tag separati da virgola, nient'altro."
+            ),
             "weekly": (
                 "Sei un coach personale d'élite che sintetizza una settimana di note vocali in una revisione settimanale strutturata. "
                 "Scrivi un report settimanale completo in Markdown in Italiano con:\n"
-                "## Sommario Settimanale\n## Azioni da Portare Avanti\n## Intuizioni e Schemi\n## Check-in Obiettivi\n"
+                "## Sommario Settimanale\n## Azioni da Portare Avanti\n## Intuizioni e Schemi\n## Temi Ricorrenti\n## Check-in Obiettivi\n"
+                "Per la sezione Temi Ricorrenti, analizza quali argomenti hanno dominato questa settimana, quali stanno svanendo, "
+                "e quali nuovi temi sono emersi in base ai dati di frequenza dei tag forniti.\n"
                 "Sii conciso, analitico e proattivo."
             ),
             "monthly": (
                 "Sei un coach personale d'élite che sintetizza un mese di revisioni settimanali in un report mensile strutturato. "
                 "Scrivi un report mensile completo in Markdown in Italiano con:\n"
-                "## Sommario Mensile\n## Progressi Obiettivi\n## Schemi Persistenti\n## Cicli Aperti\n## Focus Mese Prossimo\n"
+                "## Sommario Mensile\n## Progressi Obiettivi\n## Schemi Persistenti\n## Temi Ricorrenti\n## Cicli Aperti\n## Focus Mese Prossimo\n"
+                "Per la sezione Temi Ricorrenti, analizza quali argomenti hanno dominato questo mese, quali stanno svanendo, "
+                "e quali nuovi temi sono emersi in base ai dati di frequenza dei tag forniti.\n"
                 "Sii analitico, onesto e costruttivo."
             ),
             "annual": (

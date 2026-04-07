@@ -171,6 +171,110 @@ class TestWebAuth(unittest.TestCase):
         self.assertEqual(response.status_code, 303)
         self.assertIn("session_id", response.cookies)
 
+
+class TestTagService(unittest.TestCase):
+
+    def setUp(self):
+        import tempfile
+        self.tmpdir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir, ignore_errors=True)
+
+    def test_inject_tags_no_frontmatter(self):
+        """inject_tags prepends frontmatter to a file without one."""
+        from src.llm.tag_service import inject_tags, _parse_frontmatter_tags
+
+        fpath = os.path.join(self.tmpdir, "test.md")
+        with open(fpath, "w") as f:
+            f.write("## Actions\n\n- Buy milk\n")
+
+        inject_tags([fpath], ["health", "errands"])
+
+        tags = _parse_frontmatter_tags(fpath)
+        self.assertEqual(tags, ["health", "errands"])
+
+        # Original content must still be present
+        with open(fpath) as f:
+            content = f.read()
+        self.assertIn("## Actions", content)
+        self.assertIn("Buy milk", content)
+
+    def test_inject_tags_existing_frontmatter(self):
+        """inject_tags adds tags to a file that already has frontmatter."""
+        from src.llm.tag_service import inject_tags, _parse_frontmatter_tags
+
+        fpath = os.path.join(self.tmpdir, "test.md")
+        with open(fpath, "w") as f:
+            f.write("---\nlast_updated: 2026-01-01\n---\n\n# Goals\n")
+
+        inject_tags([fpath], ["finance", "career"])
+
+        tags = _parse_frontmatter_tags(fpath)
+        self.assertEqual(tags, ["finance", "career"])
+
+        with open(fpath) as f:
+            content = f.read()
+        self.assertIn("last_updated:", content)
+        self.assertIn("# Goals", content)
+
+    def test_inject_tags_overwrites_existing_tags(self):
+        """inject_tags replaces existing tags in frontmatter."""
+        from src.llm.tag_service import inject_tags, _parse_frontmatter_tags
+
+        fpath = os.path.join(self.tmpdir, "test.md")
+        with open(fpath, "w") as f:
+            f.write("---\ntags: [old-tag]\nlast_updated: 2026-01-01\n---\n\nContent\n")
+
+        inject_tags([fpath], ["new-tag"])
+
+        tags = _parse_frontmatter_tags(fpath)
+        self.assertEqual(tags, ["new-tag"])
+        self.assertNotIn("old-tag", tags)
+
+    def test_collect_tag_frequency(self):
+        """collect_tag_frequency correctly counts tags across files."""
+        from src.llm.tag_service import inject_tags, collect_tag_frequency
+
+        day_folder = os.path.join(self.tmpdir, "2026-04-07")
+        os.makedirs(day_folder)
+
+        f1 = os.path.join(day_folder, "lineage.md")
+        f2 = os.path.join(day_folder, "actions.md")
+        with open(f1, "w") as f:
+            f.write("lineage content")
+        with open(f2, "w") as f:
+            f.write("actions content")
+
+        inject_tags([f1, f2], ["health", "work"])
+
+        freq = collect_tag_frequency([day_folder])
+        self.assertEqual(freq["health"], 2)
+        self.assertEqual(freq["work"], 2)
+
+    def test_tags_route_requires_auth(self):
+        """GET /tags requires authentication."""
+        from src.web.server import app
+        from fastapi.testclient import TestClient
+        client = TestClient(app)
+
+        response = client.get("/tags", follow_redirects=False)
+        self.assertEqual(response.status_code, 307)
+
+    def test_empty_inject_tags_is_noop(self):
+        """inject_tags with empty list does nothing."""
+        from src.llm.tag_service import inject_tags, _parse_frontmatter_tags
+
+        fpath = os.path.join(self.tmpdir, "test.md")
+        with open(fpath, "w") as f:
+            f.write("## Content\n")
+
+        inject_tags([fpath], [])
+
+        with open(fpath) as f:
+            content = f.read()
+        self.assertEqual(content, "## Content\n")
+
+
 if __name__ == '__main__':
     unittest.main()
-

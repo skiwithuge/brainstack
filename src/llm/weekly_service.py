@@ -7,6 +7,7 @@ from src.core.config import GEMINI_API_KEY, NOTES_DIR, MEMORY_DIR, validate_summ
 from src.core.locales import LOCALES
 import src.core.config as _cfg
 from src.llm.wiki_service import update_from_weekly
+from src.llm import tag_service
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +75,13 @@ def run_weekly_summarizer(target_date: str = None) -> None:
     report_path = os.path.join(report_dir, f"{week_str}_report.md")
 
     system_prompt = LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["weekly"]
+
+    # Collect tag frequency for this week's folders
+    week_folders = [os.path.join(NOTES_DIR, d) for d, _, _ in collected]
+    tag_freq = tag_service.collect_tag_frequency(week_folders)
+    if tag_freq:
+        tag_summary = ", ".join(f"{tag}: {count}" for tag, count in tag_freq.items())
+        aggregated += f"\n\n---\n## Tag Frequency This Week\n{tag_summary}"
 
     client = genai.Client(api_key=GEMINI_API_KEY)
     try:

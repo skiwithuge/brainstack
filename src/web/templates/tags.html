@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Tags — Brainstack{% endblock %}
+{% block content %}
+
+<style>
+    .tag-cloud {
+        display: flex; flex-wrap: wrap; gap: 0.6rem;
+        padding: 1.2rem; background: var(--surface-2);
+        border-radius: var(--radius-sm); margin-bottom: 1.5rem;
+    }
+    .tag-pill {
+        display: inline-flex; align-items: center; gap: 0.35rem;
+        padding: 0.35rem 0.75rem; border-radius: 99px;
+        background: var(--accent-dim); color: var(--accent);
+        text-decoration: none; font-weight: 600;
+        transition: opacity 0.15s, transform 0.15s;
+    }
+    .tag-pill:hover { opacity: 0.8; transform: translateY(-1px); text-decoration: none; }
+    .tag-pill .count {
+        font-size: 0.72rem; background: var(--accent-glow);
+        padding: 0.1rem 0.4rem; border-radius: 99px;
+    }
+    .tag-pill.size-lg { font-size: 1.05rem; }
+    .tag-pill.size-md { font-size: 0.9rem; }
+    .tag-pill.size-sm { font-size: 0.78rem; opacity: 0.85; }
+
+    .tag-section { margin-bottom: 1.5rem; }
+    .tag-section-header {
+        font-size: 1rem; font-weight: 700; color: var(--accent);
+        margin-bottom: 0.5rem; padding-bottom: 0.25rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .tag-artifact {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0.5rem 0.75rem; border-radius: var(--radius-sm);
+        text-decoration: none; color: var(--text);
+        transition: background 0.14s; font-size: 0.88rem;
+    }
+    .tag-artifact:hover { background: var(--surface-2); text-decoration: none; }
+    .tag-artifact .date { color: var(--text-muted); font-size: 0.8rem; }
+</style>
+
+<div class="page-header">
+    <h1>🏷️ Tags</h1>
+    <p>{{ total_tags }} topic{{ 's' if total_tags != 1 else '' }} tracked across your artifacts</p>
+</div>
+
+{% if tag_index %}
+    <!-- Tag Cloud -->
+    <div class="tag-cloud">
+        {% for tag, artifacts in tag_index.items() %}
+            {% set size = 'size-lg' if artifacts|length >= 5 else ('size-md' if artifacts|length >= 3 else 'size-sm') %}
+            <a href="#tag-{{ tag }}" class="tag-pill {{ size }}">
+                #{{ tag }}
+                <span class="count">{{ artifacts|length }}</span>
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Per-Tag Artifact Lists -->
+    {% for tag, artifacts in tag_index.items() %}
+        <div class="card tag-section" id="tag-{{ tag }}">
+            <div class="tag-section-header">#{{ tag }} — {{ artifacts|length }} artifact{{ 's' if artifacts|length != 1 else '' }}</div>
+            {% for a in artifacts %}
+                <a href="/view/{{ a.file_path }}" class="tag-artifact">
+                    <span>{{ a.filename }}</span>
+                    <span class="date">{{ a.date }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="card">
+        <div class="empty">
+            <div class="empty-icon">🏷️</div>
+            <div class="empty-text">No tags found yet. Tags will appear after the daily summarizer runs.</div>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

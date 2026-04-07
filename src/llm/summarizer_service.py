@@ -8,6 +8,7 @@ from google import genai
 from src.core.config import GEMINI_API_KEY, LLM_MODEL, NOTES_DIR, TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID, APP_LANGUAGE, validate_summarizer_config
 from src.llm.parser import split_and_save_briefing
 from src.llm import wiki_service
+from src.llm import tag_service
 from src.core.locales import LOCALES
 
 logger = logging.getLogger(__name__)
@@ -73,6 +74,12 @@ def run_summarizer(target_date: str = None):
         saved_files = split_and_save_briefing(summary_markdown, folder_path, date_str)
         
         logger.info(f"Successfully generated and saved {len(saved_files)} files.")
+
+        # Tag extraction (two-pass: separate LLM call)
+        tags = tag_service.extract_tags(aggregated_text)
+        if tags:
+            tag_service.inject_tags(saved_files, tags)
+            logger.info(f"Tagged {len(saved_files)} artifacts with: {tags}")
         
         if len(saved_files) == 4:
             send_telegram_message(f"✅ **Daily Second Brain processing complete!**\nSeparated into Lineage, Actions, Drafts, and Analysis.")

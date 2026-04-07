@@ -10,6 +10,7 @@ from fastapi.templating import Jinja2Templates
 import secrets
 
 from src.core.config import NOTES_DIR, MEMORY_DIR, WEB_PASSWORD
+from src.llm import tag_service
 
 logger = logging.getLogger(__name__)
 
@@ -131,6 +132,18 @@ async def memory_section(request: Request, username: str = Depends(verify_creden
         "request": request,
         "active": "memory",
         "wiki_pages": wiki_pages,
+    })
+
+# ── Tags ───────────────────────────────────────────────────────────────────────
+
+@app.get("/tags", response_class=HTMLResponse)
+async def tags_page(request: Request, username: str = Depends(verify_credentials)):
+    tag_index = tag_service.collect_all_tags()
+    return templates.TemplateResponse(request=request, name="tags.html", context={
+        "request": request,
+        "active": "tags",
+        "tag_index": tag_index,
+        "total_tags": len(tag_index),
     })
 
 # ── Daily List ────────────────────────────────────────────────────────────────

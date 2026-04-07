@@ -3,10 +3,11 @@ import glob
 import os
 from datetime import datetime
 
-from src.core.config import GEMINI_API_KEY, MEMORY_DIR, TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID, validate_summarizer_config
+from src.core.config import GEMINI_API_KEY, MEMORY_DIR, NOTES_DIR, TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID, validate_summarizer_config
 from src.core.locales import LOCALES
 import src.core.config as _cfg
 from src.llm.wiki_service import update_from_monthly
+from src.llm import tag_service
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +63,17 @@ def run_monthly_summarizer(target_date: str = None) -> None:
     report_path = os.path.join(report_dir, f"{month_str}_report.md")
 
     system_prompt = LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["monthly"]
+
+    # Collect tag frequency for this month's daily folders
+    month_folders = []
+    if os.path.exists(NOTES_DIR):
+        for entry in os.listdir(NOTES_DIR):
+            if entry.startswith(month_str) and os.path.isdir(os.path.join(NOTES_DIR, entry)):
+                month_folders.append(os.path.join(NOTES_DIR, entry))
+    tag_freq = tag_service.collect_tag_frequency(month_folders)
+    if tag_freq:
+        tag_summary = ", ".join(f"{tag}: {count}" for tag, count in tag_freq.items())
+        aggregated += f"\n\n---\n## Tag Frequency This Month\n{tag_summary}"
 
     client = genai.Client(api_key=GEMINI_API_KEY)
     try:
