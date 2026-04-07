@@ -78,7 +78,7 @@ def run_weekly_summarizer(target_date: str = None) -> None:
     client = genai.Client(api_key=GEMINI_API_KEY)
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model=_cfg.LLM_MODEL,
             contents=f"Weekly notes ({week_str}):\n{aggregated}",
             config=genai.types.GenerateContentConfig(
                 system_instruction=system_prompt,

@@ -11,6 +11,7 @@ NOTES_DIR = os.getenv("NOTES_DIR", "./Notes")
 MEMORY_DIR = os.path.join(NOTES_DIR, "memory")
 WHISPER_MODEL_SIZE = os.getenv("WHISPER_MODEL_SIZE", "small")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+LLM_MODEL = os.getenv("LLM_MODEL", "gemini-2.5-flash")
 WEB_PASSWORD = os.getenv("WEB_PASSWORD", "brainstack")
 APP_LANGUAGE = os.getenv("APP_LANGUAGE", "en")
 

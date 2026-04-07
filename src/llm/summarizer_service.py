@@ -5,7 +5,7 @@ from datetime import datetime
 import requests
 from google import genai
 
-from src.core.config import GEMINI_API_KEY, NOTES_DIR, TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID, APP_LANGUAGE, validate_summarizer_config
+from src.core.config import GEMINI_API_KEY, LLM_MODEL, NOTES_DIR, TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID, APP_LANGUAGE, validate_summarizer_config
 from src.llm.parser import split_and_save_briefing
 from src.llm import wiki_service
 from src.core.locales import LOCALES
@@ -60,7 +60,7 @@ def run_summarizer(target_date: str = None):
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model=LLM_MODEL,
             contents=aggregated_text,
             config=genai.types.GenerateContentConfig(
                 system_instruction=system_prompt,

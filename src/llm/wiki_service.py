@@ -97,7 +97,7 @@ def _call_llm(system_prompt: str, user_content: str) -> str | None:
     try:
         client = genai.Client(api_key=GEMINI_API_KEY)
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model=_cfg.LLM_MODEL,
             contents=user_content,
             config=genai.types.GenerateContentConfig(
                 system_instruction=system_prompt,
