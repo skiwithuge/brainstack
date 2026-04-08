@@ -93,18 +93,10 @@ def _append_log(entry: str) -> None:
 
 
 def _call_llm(system_prompt: str, user_content: str) -> str | None:
-    """Calls Gemini and returns the text response, or None on failure."""
+    from src.llm.client import generate_response
     try:
-        client = genai.Client(api_key=GEMINI_API_KEY)
-        response = client.models.generate_content(
-            model=_cfg.LLM_MODEL,
-            contents=user_content,
-            config=genai.types.GenerateContentConfig(
-                system_instruction=system_prompt,
-                temperature=0.2
-            )
-        )
-        return response.text.strip()
+        updated_markdown = generate_response(system_prompt, user_content, temperature=0.3)
+        return updated_markdown.strip()
     except Exception as e:
         logger.error(f"Wiki LLM call failed: {e}")
         return None

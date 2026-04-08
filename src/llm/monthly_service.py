@@ -75,17 +75,9 @@ def run_monthly_summarizer(target_date: str = None) -> None:
         tag_summary = ", ".join(f"{tag}: {count}" for tag, count in tag_freq.items())
         aggregated += f"\n\n---\n## Tag Frequency This Month\n{tag_summary}"
 
-    client = genai.Client(api_key=GEMINI_API_KEY)
     try:
-        response = client.models.generate_content(
-            model=_cfg.LLM_MODEL,
-            contents=f"Monthly notes ({month_str}):\n{aggregated}",
-            config=genai.types.GenerateContentConfig(
-                system_instruction=system_prompt,
-                temperature=0.3
-            )
-        )
-        report_md = response.text.strip()
+        from src.llm.client import generate_response
+        report_md = generate_response(system_prompt, f"Monthly notes ({month_str}):\n{aggregated}", temperature=0.3)
         with open(report_path, "w", encoding="utf-8") as f:
             f.write(f"# Monthly Report: {month_str}\n\n{report_md}")
 

@@ -10,8 +10,13 @@ AUTHORIZED_USER_ID = int(auth_id_str) if auth_id_str.isdigit() else 0
 NOTES_DIR = os.getenv("NOTES_DIR", "./Notes")
 MEMORY_DIR = os.path.join(NOTES_DIR, "memory")
 WHISPER_MODEL_SIZE = os.getenv("WHISPER_MODEL_SIZE", "small")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+# ── LLM Configuration ────────────────────────────────────────────────────────
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "gemini").lower()
 LLM_MODEL = os.getenv("LLM_MODEL", "gemini-2.5-flash")
+LLM_BASE_URL = os.getenv("LLM_BASE_URL", "http://localhost:11434/api/generate")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+
 WEB_PASSWORD = os.getenv("WEB_PASSWORD", "brainstack")
 APP_LANGUAGE = os.getenv("APP_LANGUAGE", "en")
 
@@ -22,5 +27,5 @@ def validate_bot_config():
         raise ValueError("AUTHORIZED_USER_ID is not set in .env")
 
 def validate_summarizer_config():
-    if not GEMINI_API_KEY:
-        raise ValueError("GEMINI_API_KEY is not set in .env")
+    if LLM_PROVIDER == "gemini" and not GEMINI_API_KEY:
+        raise ValueError("GEMINI_API_KEY is not set in environment or .env file, but LLM_PROVIDER is set to gemini.")

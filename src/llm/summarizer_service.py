@@ -54,22 +54,13 @@ def run_summarizer(target_date: str = None):
             aggregated_text += f"### Note at {time_part}\n{content}\n\n"
 
     logger.info("Calling LLM API for consolidation...")
-    client = genai.Client(api_key=GEMINI_API_KEY)
     
     locale_config = LOCALES.get(APP_LANGUAGE, LOCALES["en"])
     system_prompt = locale_config["system_prompt"]
 
     try:
-        response = client.models.generate_content(
-            model=LLM_MODEL,
-            contents=aggregated_text,
-            config=genai.types.GenerateContentConfig(
-                system_instruction=system_prompt,
-                temperature=0.3
-            )
-        )
-        
-        summary_markdown = response.text.strip()
+        from src.llm.client import generate_response
+        summary_markdown = generate_response(system_prompt, aggregated_text, temperature=0.3)
         
         saved_files = split_and_save_briefing(summary_markdown, folder_path, date_str)
         

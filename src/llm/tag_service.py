@@ -18,16 +18,8 @@ def extract_tags(text: str) -> list[str]:
     system_prompt = locale["memory_prompts"]["tags"]
 
     try:
-        client = genai.Client(api_key=GEMINI_API_KEY)
-        response = client.models.generate_content(
-            model=_cfg.LLM_MODEL,
-            contents=text,
-            config=genai.types.GenerateContentConfig(
-                system_instruction=system_prompt,
-                temperature=0.1
-            )
-        )
-        raw = response.text.strip()
+        from src.llm.client import generate_response
+        raw = generate_response(system_prompt=system_prompt, user_content=text, temperature=0.1)
         tags = [t.strip().lower().replace(" ", "-") for t in raw.split(",") if t.strip()]
         # Sanitize: keep only alphanumeric and hyphens, max 10 tags
         tags = [re.sub(r"[^a-z0-9\-]", "", t) for t in tags if t]

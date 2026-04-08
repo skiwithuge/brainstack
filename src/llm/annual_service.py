@@ -62,17 +62,9 @@ def run_annual_summarizer(target_date: str = None) -> None:
 
     system_prompt = LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["annual"]
 
-    client = genai.Client(api_key=GEMINI_API_KEY)
     try:
-        response = client.models.generate_content(
-            model=_cfg.LLM_MODEL,
-            contents=f"Annual notes ({year_str}):\n{aggregated}",
-            config=genai.types.GenerateContentConfig(
-                system_instruction=system_prompt,
-                temperature=0.4
-            )
-        )
-        report_md = response.text.strip()
+        from src.llm.client import generate_response
+        report_md = generate_response(system_prompt, f"Annual notes ({year_str}):\n{aggregated}", temperature=0.3)
         with open(report_path, "w", encoding="utf-8") as f:
             f.write(f"# Annual Report: {year_str}\n\n{report_md}")
 
