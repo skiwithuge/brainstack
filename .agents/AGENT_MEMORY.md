@@ -65,3 +65,25 @@ This document serves as the persistent memory and "building flow" tracker for au
 - **Tests added:** `test_wiki_init`, `test_wiki_init_idempotent`, `test_stale_loop_detection`, `test_wiki_guard` — all passing (7/7 total).
 **Dependencies:** None new (reuses `google-genai`, `requests`).
 **Privacy:** `Notes/memory/` is gitignored — never pushed to GitHub.
+
+### [2026-04-07] Web Interface Redesign & Authentication Upgrade
+**Goal:** Transition from basic HTTP auth to session cookie and upgrade dashboard UI.
+**Architectural Decisions:** 
+- Replaced HTTP Basic Auth with session cookie login.
+- Transformed empty `/` dashboard to an active "Working Desk" displaying dynamic memory wiki data (Goals + Open Loops).
+- Aggressive LLM prompts for `open_loops` (10 items max, strict single lines) without conversational filler.
+
+### [2026-04-07] LLM Configuration Centralization
+**Goal:** Refactor LLM string usage to a central configuration point.
+**Architectural Decisions:**
+- Handled `LLM_MODEL` inside `src/core/config.py` and mapped environments variables.
+- Refactored multiple service orchestrators (weekly, monthly, annual, summarizer, etc.) to use the centralized config.
+
+### [2026-04-07] Tag System and Knowledge Graph
+**Goal:** Implement automated, zero-JS tagging for knowledge discovery from daily artifacts to recurring topics analysis.
+**Architectural Decisions:**
+- Created `src/llm/tag_service.py` with multi-tier logic (LLM based tag extraction, YAML frontmatter injection, frequency indexing via filesystems).
+- Two-pass summarization: Extracts tags separately from daily briefing using a focused LLM query to keep the 4-header parser robust.
+- Added `/tags` Web UI route and template rendering a tag cloud grouped by occurrences without JavaScript.
+- Updated weekly and monthly services to inject tag frequency data directly into the LLM context to power a new "Recurring Topics" analysis.
+**Security/State:** Zero-JS philosophy maintained. Used raw regex for YAML parsing to avoid adding new third-party dependencies (like `pyyaml`).
