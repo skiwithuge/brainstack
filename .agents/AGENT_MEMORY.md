@@ -94,3 +94,11 @@ This document serves as the persistent memory and "building flow" tracker for au
 - Updated `src/core/locales.py` prompts for both `en` and `it` to specify "up to 5 highly relevant" tags instead of "exactly 3 to 5".
 - Instructed LLM to return nothing if no relevant topics are found, preventing hallucinated tags.
 **Security/State:** No changes to file system structure or security guards.
+### [2026-04-09] Full Self-Hosted Deployment Documentation
+**Goal:** Document the complete self-hosting workflow including local LLM (Ollama) and hidden environment variables.
+**Architectural Decisions:**
+- Overhauled `DEPLOYMENT.md` to include a "Privacy First" section for local transcription and local LLM.
+- Documented Ollama installation and recommended models (`mistral-nemo`, `llama3.1`).
+- Expanded Environment Variables table with `LLM_PROVIDER`, `LLM_MODEL`, `LLM_BASE_URL`, and `NOTES_DIR`.
+- Updated `.env.example` with grouped headers and clearer comments for self-hosting.
+**Security/State:** Emphasized the local data privacy of the self-hosted stack.

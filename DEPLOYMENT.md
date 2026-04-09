@@ -74,6 +74,15 @@ To customise the schedule, edit `docker/crontab` and rebuild: `docker compose bu
 
 ---
 
+## 🏗️ Service Architecture
+
+Brainstack consists of three distinct modules that work together:
+
+1.  **The Bot (`bot.py`)**: A permanent background listener that records voice notes and handles immediate transcription via `faster-whisper`.
+2.  **The Web Viewer (`src.web.server`)**: A FastAPI interface for browsing and editing your notes.
+3.  **The Scheduler (`summarizer.py`, `weekly.py`, etc.)**: A set of processing jobs that run periodically to analyze your data and build the memory index.
+
+
 ## 🖥️ Proxmox LXC Deployment (Bare Metal)
 
 ## 1. Create the Container in Proxmox
@@ -132,12 +141,54 @@ Before starting, review your `.env` file — key options:
 
 | Variable | Default | Description |
 |---|---|---|
-| `TELEGRAM_BOT_TOKEN` | *(required)* | Your Telegram bot token |
-| `AUTHORIZED_USER_ID` | *(required)* | Your Telegram numeric user ID |
-| `GEMINI_API_KEY` | *(required)* | Your Google Gemini API key |
-| `WEB_PASSWORD` | `brainstack` | Password for the web viewer |
-| `APP_LANGUAGE` | `en` | Language for LLM output (`en` or `it`) |
-| `WHISPER_MODEL_SIZE` | `small` | Whisper model size (`tiny`, `small`, `medium`) |
+| `TELEGRAM_BOT_TOKEN` | *(required)* | Your Telegram bot token from @BotFather |
+| `AUTHORIZED_USER_ID` | *(required)* | Your numeric User ID to lock the bot to your account |
+| `LLM_PROVIDER` | `gemini` | `gemini` (Cloud) or `ollama` (Local) |
+| `LLM_MODEL` | `gemini-2.5-flash` | LLM model tag (e.g., `mistral-nemo`, `llama3.1:8b`) |
+| `LLM_BASE_URL` | `http://localhost:11434/api/generate` | Local Ollama endpoint |
+| `GEMINI_API_KEY` | *(required)* | Your Google Gemini API key (optional if using Ollama) |
+| `NOTES_DIR` | `./Notes` | Where your raw audio and summaries are saved |
+| `WHISPER_MODEL_SIZE` | `small` | Transcription quality (`tiny`, `small`, `medium`) |
+| `WEB_PASSWORD` | `brainstack` | Password for the browser dashboard |
+| `APP_LANGUAGE` | `en` | Language for LLM analysis (`en` or `it`) |
+
+---
+
+## 🛡️ Privacy First: Full Self-Hosted Workflow
+
+Brainstack is designed to run entirely on your own hardware without sending a single byte of content to the cloud. This requires two components to be local: **Transcription (Whisper)** and **Analysis (Ollama)**.
+
+### 1. Local Transcription (Whisper)
+By default, Brainstack uses `faster-whisper` locally. 
+*   **Hardware Requirement:** 2+ CPU cores. 
+*   **Recommendation:** Set `WHISPER_MODEL_SIZE="medium"` in your `.env` for significantly better accuracy in Italian or complex English, if you have at least 8GB of RAM.
+
+### 2. Local LLM (Ollama Installation)
+If you don't want to use Google Gemini, you can use **Ollama**.
+
+**Installation (Linux/LXC):**
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+**Pull the recommended models:**
+For Brainstack's analytical tasks, we recommend `mistral-nemo` (12B) or `llama3.1` (8B).
+```bash
+ollama pull mistral-nemo
+ollama pull llama3.1
+```
+
+### 3. Connection
+Update your `.env` to point to your Ollama instance:
+```bash
+LLM_PROVIDER=ollama
+LLM_MODEL=mistral-nemo
+LLM_BASE_URL=http://localhost:11434/api/generate
+```
+
+*Note: If Ollama is running in a different LXC or VM, change `localhost` to its static IP.*
+
+---
 
 ## 5. Schedule All Automated Jobs
 
