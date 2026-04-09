@@ -41,7 +41,8 @@ LOCALES = {
                 "Respond entirely in English. Return the complete updated page including frontmatter."
             ),
             "tags": (
-                "Given the following voice notes, return exactly 3 to 5 lowercase tags, comma-separated. "
+                "Given the following voice notes, return up to 5 highly relevant lowercase tags, comma-separated. "
+                "Only return tags if they represent main topics. If there are no clear topics, return nothing. "
                 "Use single words or hyphenated compounds only. Do NOT write sentences, explanations, or bullet points. "
                 "Example output: health, project-x, finance\n"
                 "Return ONLY the comma-separated tags, nothing else."
@@ -112,7 +113,8 @@ LOCALES = {
                 "Rispondi interamente in Italiano. Restituisci la pagina completa aggiornata incluso il frontmatter."
             ),
             "tags": (
-                "Date le seguenti note vocali, restituisci esattamente da 3 a 5 tag in minuscolo, separati da virgola. "
+                "Date le seguenti note vocali, restituisci fino a 5 tag altamente rilevanti in minuscolo, separati da virgola. "
+                "Restituisci tag solo se rappresentano argomenti principali. Se non ci sono argomenti chiari, non restituire nulla. "
                 "Usa solo parole singole o composte con trattino. NON scrivere frasi, spiegazioni o elenchi puntati. "
                 "Esempio di output: salute, progetto-x, finanza\n"
                 "Restituisci SOLO i tag separati da virgola, nient'altro."

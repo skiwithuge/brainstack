@@ -87,3 +87,10 @@ This document serves as the persistent memory and "building flow" tracker for au
 - Added `/tags` Web UI route and template rendering a tag cloud grouped by occurrences without JavaScript.
 - Updated weekly and monthly services to inject tag frequency data directly into the LLM context to power a new "Recurring Topics" analysis.
 **Security/State:** Zero-JS philosophy maintained. Used raw regex for YAML parsing to avoid adding new third-party dependencies (like `pyyaml`).
+
+### [2026-04-09] Tagging System Optimization — Quota Removal
+**Goal:** Improve tag relevance by removing the forced 3-5 tag quota.
+**Architectural Decisions:**
+- Updated `src/core/locales.py` prompts for both `en` and `it` to specify "up to 5 highly relevant" tags instead of "exactly 3 to 5".
+- Instructed LLM to return nothing if no relevant topics are found, preventing hallucinated tags.
+**Security/State:** No changes to file system structure or security guards.
