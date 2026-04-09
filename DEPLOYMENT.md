@@ -161,7 +161,7 @@ Brainstack is designed to run entirely on your own hardware without sending a si
 ### 1. Local Transcription (Whisper)
 By default, Brainstack uses `faster-whisper` locally. 
 *   **Hardware Requirement:** 2+ CPU cores. 
-*   **Recommendation:** Set `WHISPER_MODEL_SIZE="medium"` in your `.env` for significantly better accuracy in Italian or complex English, if you have at least 8GB of RAM.
+*   **Recommendation:** Set `WHISPER_MODEL_SIZE="large-v3"` in your `.env` for significantly better accuracy in Italian or complex English, if you have at least 8GB of RAM.
 
 ### 2. Local LLM (Ollama Installation)
 If you don't want to use Google Gemini, you can use **Ollama**.
@@ -172,7 +172,7 @@ curl -fsSL https://ollama.com/install.sh | sh
 ```
 
 **Pull the recommended models:**
-For Brainstack's analytical tasks, we recommend `mistral-nemo` (12B) or `llama3.1` (8B).
+For Brainstack's analytical tasks (on a light hardware pc), we recommend `mistral-nemo` (12B) or `llama3.1` (8B).
 ```bash
 ollama pull mistral-nemo
 ollama pull llama3.1
