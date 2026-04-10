@@ -102,3 +102,9 @@ This document serves as the persistent memory and "building flow" tracker for au
 - Expanded Environment Variables table with `LLM_PROVIDER`, `LLM_MODEL`, `LLM_BASE_URL`, and `NOTES_DIR`.
 - Updated `.env.example` with grouped headers and clearer comments for self-hosting.
 **Security/State:** Emphasized the local data privacy of the self-hosted stack.
+
+### Text Message Notes Support
+* **Date:** 2026-04-10
+* **Goal:** Allow rapid note capture without requiring audio transcription.
+* **Design Decisions:** Added a simple text handler to telegram bot that bypasses whisper entirely and links directly to the save_note pipeline.
+* **Outcome:** Implemented handle_text checking against authorized id. Added isolated asyncio mocking in tests.
