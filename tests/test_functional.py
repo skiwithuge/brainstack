@@ -276,5 +276,63 @@ class TestTagService(unittest.TestCase):
         self.assertEqual(content, "## Content\n")
 
 
+class TestTelegramBot(unittest.IsolatedAsyncioTestCase):
+    async def test_handle_text_saves_note(self):
+        import src.core.config
+        from src.telegram.bot_service import handle_text
+        import tempfile
+        
+        # We must use mocks/fake objects to stub python-telegram-bot's Update and Context
+        class MockUser:
+            def __init__(self, id):
+                self.id = id
+                
+        class MockMessage:
+            def __init__(self, text):
+                self.text = text
+                self.replied = None
+                
+            async def reply_text(self, text, parse_mode=None):
+                self.replied = text
+
+        class MockUpdate:
+            def __init__(self, user_id, text):
+                self.effective_user = MockUser(user_id)
+                self.message = MockMessage(text)
+
+        # Patch storage directory so we don't pollute local file system
+        import src.storage.notes as notes_pkg
+        old_notes_dir = notes_pkg.NOTES_DIR
+        tmp = tempfile.mkdtemp()
+        notes_pkg.NOTES_DIR = tmp
+        
+        try:
+            update = MockUpdate(int(src.core.config.AUTHORIZED_USER_ID), "This is a simple text note.")
+            await handle_text(update, None)
+            
+            # Message should be replied to
+            self.assertIsNotNone(update.message.replied)
+            self.assertIn("Text note saved", update.message.replied)
+            
+            # Check file got created
+            from src.storage.notes import get_daily_folder
+            df = get_daily_folder()
+            raw_dir = os.path.join(df, "raw")
+            files = os.listdir(raw_dir)
+            self.assertEqual(len(files), 1)
+            
+            with open(os.path.join(raw_dir, files[0])) as f:
+                self.assertEqual(f.read(), "This is a simple text note.")
+                
+            # Test unauthorized
+            unauth_update = MockUpdate(999999, "Secret hacking note")
+            await handle_text(unauth_update, None)
+            self.assertIsNone(unauth_update.message.replied)
+            self.assertEqual(len(os.listdir(raw_dir)), 1) # Only the previous authorized note
+            
+        finally:
+            notes_pkg.NOTES_DIR = old_notes_dir
+            shutil.rmtree(tmp, ignore_errors=True)
+
 if __name__ == '__main__':
     unittest.main()

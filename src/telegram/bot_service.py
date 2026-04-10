@@ -52,6 +52,28 @@ async def handle_voice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         if os.path.exists(temp_audio_path):
             os.remove(temp_audio_path)
 
+async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user = update.effective_user
+    if user.id != AUTHORIZED_USER_ID:
+        logger.warning(f"Unauthorized text attempt from user ID {user.id}")
+        return
+
+    full_text = update.message.text
+    if not full_text or not full_text.strip():
+        return
+
+    logger.info("Text message received.")
+    try:
+        filename = save_note(full_text.strip())
+        await update.message.reply_text(
+            f"✅ **Text note saved as** `{filename}`:\n\n_{full_text.strip()}_", 
+            parse_mode='Markdown'
+        )
+        logger.info(f"Successfully saved text note to {filename}")
+    except Exception as e:
+        logger.error(f"Error saving text note: {e}")
+        await update.message.reply_text("❌ An error occurred while saving the text note.")
+
 def run_bot():
     validate_bot_config()
     global transcriber 
@@ -60,6 +82,7 @@ def run_bot():
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.VOICE, handle_voice))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 
     logger.info("Starting polling...")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
