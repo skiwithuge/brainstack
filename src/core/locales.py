@@ -20,20 +20,13 @@ LOCALES = {
             "DO NOT produce any other top-level headers. You MUST strictly follow this Markdown structure and respond only in English."
         ),
         "memory_prompts": {
-            "open_loops": (
-                "You are an elite personal assistant maintaining an 'Open Loops' tracking page. "
-                "You will receive the current open loops and new action items. "
-                "Your task:\n"
-                "1. Maintain a strict MAX limit of 10 open loops. If new items exceed this, ruthlessly drop the least critical or oldest items.\n"
-                "2. Every loop must be formatted perfectly as a concise single line: `- [YYYY-MM-DD] <10-word description max>`. Remove all explanation or conversational fluff.\n"
-                "3. If an item appears resolved, either delete it or mark it closed: `- [CLOSED YYYY-MM-DD] ~~<original item>~~`.\n"
-                "4. Respond entirely in English, and DO NOT output conversational introductions or explanations. Return ONLY the complete updated Markdown page including frontmatter."
-            ),
-            "goals": (
-                "You are maintaining a 'Goals' page tracking the user's evolving goals. "
-                "Review the report and update goals — add new ones, mark completed ones, update progress. "
-                "Be concise and structured. Respond entirely in English. "
-                "Return the complete updated page including frontmatter."
+            "focus": (
+                "You are maintaining an 'Active Focus' page tracking the user's top goals and next actions. "
+                "You will receive the current focus page and new action items or reports. Your strict task:\n"
+                "1. Maintain a MAX limit of 3 macro-focus areas (Goals/Projects). Drop least critical ones if exceeded.\n"
+                "2. Under each focus area, list a MAX of 3 concrete next-actions as bullet points: `- [YYYY-MM-DD] <action>`.\n"
+                "3. Remove completed actions or move them out. Do not add conversational fluff.\n"
+                "4. Respond entirely in English. Return ONLY the complete updated Markdown page including frontmatter."
             ),
             "patterns": (
                 "You are maintaining a 'Patterns' page tracking recurring themes, habits, and thinking patterns. "
@@ -50,7 +43,7 @@ LOCALES = {
             "weekly": (
                 "You are an elite personal coach synthesizing a week of voice notes into a structured weekly review. "
                 "Write a comprehensive weekly report in Markdown in English covering:\n"
-                "## Weekly Summary\n## Actions Carried Forward\n## Insights & Patterns\n## Recurring Topics\n## Goals Check-in\n"
+                "## Weekly Summary\n## Actions Carried Forward\n## Insights & Patterns\n## Recurring Topics\n## Active Focus\n"
                 "For the Recurring Topics section, analyze which topics dominated this week, which are fading, "
                 "and what new themes emerged based on the tag frequency data provided.\n"
                 "Be concise, analytical, and proactive."
@@ -58,7 +51,7 @@ LOCALES = {
             "monthly": (
                 "You are an elite personal coach synthesizing a month of weekly reviews into a structured monthly report. "
                 "Write a comprehensive monthly report in Markdown in English covering:\n"
-                "## Monthly Summary\n## Goals Progress\n## Persistent Patterns\n## Recurring Topics\n## Open Loops\n## Next Month Focus\n"
+                "## Monthly Summary\n## Active Focus\n## Persistent Patterns\n## Recurring Topics\n## Next Month Focus\n"
                 "For the Recurring Topics section, analyze which topics dominated this month, which are fading, "
                 "and what new themes emerged based on the tag frequency data provided.\n"
                 "Be analytical, honest, and constructive."
@@ -92,20 +85,13 @@ LOCALES = {
             "NON produrre nessun'altra intestazione di primo livello. DEVI seguire rigorosamente questa struttura Markdown e rispondere solo in Italiano."
         ),
         "memory_prompts": {
-            "open_loops": (
-                "Sei un assistente personale d'élite che gestisce una pagina di 'Cicli Aperti'. "
-                "Riceverai i cicli attuali e nuovi elementi d'azione. "
-                "Il tuo compito:\n"
-                "1. Mantieni un LIMITE MASSIMO rigido di 10 cicli aperti. Se i nuovi elementi superano questo limite, elimina spietatamente gli elementi meno critici o più vecchi.\n"
-                "2. Ogni ciclo deve essere formattato perfettamente su una singola linea concisa: `- [YYYY-MM-DD] <descrizione di massimo 10 parole>`. Rimuovi ogni spiegazione o rumore verbale.\n"
-                "3. Se un elemento sembra risolto, eliminalo oppure marcalo chiuso: `- [CHIUSO YYYY-MM-DD] ~~<elemento originale>~~`.\n"
-                "4. Rispondi interamente in Italiano e NON produrre introduzioni conversazionali o spiegazioni. Restituisci SOLO la pagina Markdown completa e aggiornata incluso il frontmatter."
-            ),
-            "goals": (
-                "Stai gestendo una pagina 'Obiettivi' che traccia gli obiettivi in evoluzione dell'utente. "
-                "Analizza il report e aggiorna gli obiettivi — aggiungi nuovi, segna quelli completati, aggiorna i progressi. "
-                "Sii conciso e strutturato. Rispondi interamente in Italiano. "
-                "Restituisci la pagina completa aggiornata incluso il frontmatter."
+            "focus": (
+                "Stai gestendo una pagina 'Focus Attivo' che traccia gli obiettivi principali e le prossime azioni dell'utente. "
+                "Riceverai la pagina attuale e nuovi elementi d'azione o report. Il tuo compito rigoroso:\n"
+                "1. Mantieni un LIMITE MASSIMO di 3 macro-aree di focus (Obiettivi/Progetti). Elimina i meno critici se superato.\n"
+                "2. Sotto ogni area di focus, elenca un MASSIMO di 3 prossime azioni concrete come punti elenco: `- [YYYY-MM-DD] <azione>`.\n"
+                "3. Rimuovi le azioni completate o scartale. Non aggiungere rumore conversazionale.\n"
+                "4. Rispondi interamente in Italiano. Restituisci SOLO la pagina Markdown completa e aggiornata incluso il frontmatter."
             ),
             "patterns": (
                 "Stai gestendo una pagina 'Schemi' che traccia temi ricorrenti, abitudini e pattern di pensiero. "
@@ -122,7 +108,7 @@ LOCALES = {
             "weekly": (
                 "Sei un coach personale d'élite che sintetizza una settimana di note vocali in una revisione settimanale strutturata. "
                 "Scrivi un report settimanale completo in Markdown in Italiano con:\n"
-                "## Sommario Settimanale\n## Azioni da Portare Avanti\n## Intuizioni e Schemi\n## Temi Ricorrenti\n## Check-in Obiettivi\n"
+                "## Sommario Settimanale\n## Azioni da Portare Avanti\n## Intuizioni e Schemi\n## Temi Ricorrenti\n## Focus Attivo\n"
                 "Per la sezione Temi Ricorrenti, analizza quali argomenti hanno dominato questa settimana, quali stanno svanendo, "
                 "e quali nuovi temi sono emersi in base ai dati di frequenza dei tag forniti.\n"
                 "Sii conciso, analitico e proattivo."
@@ -130,7 +116,7 @@ LOCALES = {
             "monthly": (
                 "Sei un coach personale d'élite che sintetizza un mese di revisioni settimanali in un report mensile strutturato. "
                 "Scrivi un report mensile completo in Markdown in Italiano con:\n"
-                "## Sommario Mensile\n## Progressi Obiettivi\n## Schemi Persistenti\n## Temi Ricorrenti\n## Cicli Aperti\n## Focus Mese Prossimo\n"
+                "## Sommario Mensile\n## Focus Attivo\n## Schemi Persistenti\n## Temi Ricorrenti\n## Focus Mese Prossimo\n"
                 "Per la sezione Temi Ricorrenti, analizza quali argomenti hanno dominato questo mese, quali stanno svanendo, "
                 "e quali nuovi temi sono emersi in base ai dati di frequenza dei tag forniti.\n"
                 "Sii analitico, onesto e costruttivo."

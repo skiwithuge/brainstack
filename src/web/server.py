@@ -81,17 +81,11 @@ def _greeting() -> str:
 async def dashboard(request: Request, username: str = Depends(verify_credentials)):
     today_str = datetime.now().strftime("%Y-%m-%d")
 
-    open_loops_path = os.path.join(MEMORY_DIR, "open_loops.md")
-    open_loops_html = None
-    if os.path.exists(open_loops_path):
-        with open(open_loops_path, "r", encoding="utf-8") as f:
-            open_loops_html = markdown.markdown(f.read())
-
-    goals_path = os.path.join(MEMORY_DIR, "goals.md")
-    goals_html = None
-    if os.path.exists(goals_path):
-        with open(goals_path, "r", encoding="utf-8") as f:
-            goals_html = markdown.markdown(f.read())
+    focus_path = os.path.join(MEMORY_DIR, "focus.md")
+    focus_html = None
+    if os.path.exists(focus_path):
+        with open(focus_path, "r", encoding="utf-8") as f:
+            focus_html = markdown.markdown(f.read())
 
     latest_weekly = None
     weekly_dir = os.path.join(MEMORY_DIR, "weekly")
@@ -108,8 +102,7 @@ async def dashboard(request: Request, username: str = Depends(verify_credentials
         "request": request,
         "active": "home",
         "today_str": today_str,
-        "open_loops_html": open_loops_html,
-        "goals_html": goals_html,
+        "focus_html": focus_html,
         "latest_weekly": latest_weekly,
         "greeting": _greeting(),
     })

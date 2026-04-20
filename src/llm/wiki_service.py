@@ -16,22 +16,17 @@ _TEMPLATES = {
     "index.md": (
         "---\nlast_updated: {date}\n---\n\n# Memory Index\n\n"
         "| Page | Description |\n|---|---|\n"
-        "| [goals.md](goals.md) | Current goals and their evolution |\n"
+        "| [focus.md](focus.md) | Active focus goals and next actions |\n"
         "| [patterns.md](patterns.md) | Recurring themes and thinking habits |\n"
-        "| [open_loops.md](open_loops.md) | Unresolved action items with dates |\n"
         "| [log.md](log.md) | Append-only chronological audit trail |\n"
     ),
-    "goals.md": (
-        "---\nlast_updated: {date}\n---\n\n# Goals\n\n"
-        "*No goals recorded yet. Will be populated on the first weekly run.*\n"
+    "focus.md": (
+        "---\nlast_updated: {date}\n---\n\n# Active Focus\n\n"
+        "*No active focus recorded yet. Will be populated on the first weekly run or daily summary.*\n"
     ),
     "patterns.md": (
         "---\nlast_updated: {date}\n---\n\n# Patterns\n\n"
         "*No patterns identified yet. Will be populated on the first weekly run.*\n"
-    ),
-    "open_loops.md": (
-        "---\nlast_updated: {date}\n---\n\n# Open Loops\n\n"
-        "*No open loops yet. Will be populated after the first daily summary.*\n"
     ),
     "log.md": (
         "# Log\n\n"
@@ -103,7 +98,7 @@ def _call_llm(system_prompt: str, user_content: str) -> str | None:
 
 
 def update_from_daily(actions_path: str) -> None:
-    """Updates open_loops.md from today's actions file. Called after daily summarizer."""
+    """Updates focus.md from today's actions file. Called after daily summarizer."""
     init_memory()
 
     if not os.path.exists(actions_path):
@@ -113,24 +108,24 @@ def update_from_daily(actions_path: str) -> None:
     with open(actions_path, "r", encoding="utf-8") as f:
         actions_content = f.read()
 
-    current_loops = _read_page("open_loops.md")
+    current_focus = _read_page("focus.md")
     today = datetime.now().strftime("%Y-%m-%d")
 
-    system_prompt = LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["open_loops"]
+    system_prompt = LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["focus"]
     user_content = (
-        f"## Current Open Loops Page\n\n{current_loops}\n\n"
+        f"## Current Active Focus Page\n\n{current_focus}\n\n"
         f"## Today's ({today}) Action Items\n\n{actions_content}"
     )
 
     updated = _call_llm(system_prompt, user_content)
     if updated:
-        wrote = _write_page("open_loops.md", updated, current_loops)
+        wrote = _write_page("focus.md", updated, current_focus)
         status = "updated" if wrote else "guard_aborted"
     else:
         status = "llm_failed"
 
-    _append_log(f"## [{today}] daily | open_loops {status}")
-    logger.info(f"wiki_service daily update: open_loops {status}")
+    _append_log(f"## [{today}] daily | focus {status}")
+    logger.info(f"wiki_service daily update: focus {status}")
 
 
 def _update_wiki_pages(report_content: str, tier: str) -> dict:
@@ -139,8 +134,7 @@ def _update_wiki_pages(report_content: str, tier: str) -> dict:
     results = {}
 
     pages_to_update = {
-        "open_loops.md": LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["open_loops"],
-        "goals.md": LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["goals"],
+        "focus.md": LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["focus"],
         "patterns.md": LOCALES.get(_cfg.APP_LANGUAGE, LOCALES["en"])["memory_prompts"]["patterns"],
     }
 
@@ -192,14 +186,14 @@ def _send_stale_loop_nudge() -> None:
     if not TELEGRAM_BOT_TOKEN or not AUTHORIZED_USER_ID:
         return
 
-    loops_content = _read_page("open_loops.md")
-    if not loops_content:
+    focus_content = _read_page("focus.md")
+    if not focus_content:
         return
 
     threshold = datetime.now() - timedelta(days=7)
     stale_items = []
 
-    for line in loops_content.splitlines():
+    for line in focus_content.splitlines():
         # Match lines like: - [YYYY-MM-DD] item text
         if line.strip().startswith("- [") and not "[CLOSED" in line:
             try:
@@ -215,7 +209,7 @@ def _send_stale_loop_nudge() -> None:
         return
 
     message = (
-        f"⚠️ *Open Loops Reminder* — {len(stale_items)} item(s) have been open for over 7 days:\n\n"
+        f"⚠️ *Active Focus Reminder* — {len(stale_items)} action(s) have been open for over 7 days:\n\n"
         + "\n".join(stale_items[:10])  # cap at 10 to avoid Telegram message length limits
     )
 
@@ -226,17 +220,17 @@ def _send_stale_loop_nudge() -> None:
             "text": message,
             "parse_mode": "Markdown"
         }, timeout=10)
-        logger.info(f"Stale loop nudge sent: {len(stale_items)} items")
+        logger.info(f"Stale focus nudge sent: {len(stale_items)} items")
     except Exception as e:
         logger.error(f"Failed to send stale loop nudge: {e}")
 
 
 def get_stale_loops(threshold_days: int = 7) -> list[str]:
-    """Returns list of stale open loop lines (for testing)."""
-    loops_content = _read_page("open_loops.md")
+    """Returns list of stale focus action lines (for testing)."""
+    focus_content = _read_page("focus.md")
     threshold = datetime.now() - timedelta(days=threshold_days)
     stale = []
-    for line in loops_content.splitlines():
+    for line in focus_content.splitlines():
         if line.strip().startswith("- [") and "[CLOSED" not in line:
             try:
                 date_str = line.strip()[3:13]

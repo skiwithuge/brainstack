@@ -42,28 +42,15 @@
 
 <div class="dash-grid">
 
-    <!-- Goals (Working Desk) -->
-    <div class="card dash-goals">
-        <div class="card-label">🎯 Active Goals</div>
-        {% if goals_html %}
-            <div class="loops-scroll prose">{{ goals_html | safe }}</div>
+    <!-- Active Focus -->
+    <div class="card dash-focus">
+        <div class="card-label">🎯 Active Focus</div>
+        {% if focus_html %}
+            <div class="loops-scroll prose">{{ focus_html | safe }}</div>
         {% else %}
             <div class="empty">
                 <div class="empty-icon">🎯</div>
-                <div class="empty-text">No goals recorded yet</div>
-            </div>
-        {% endif %}
-    </div>
-
-    <!-- Open Loops -->
-    <div class="card dash-loops">
-        <div class="card-label">🔄 Open Loops</div>
-        {% if open_loops_html %}
-            <div class="loops-scroll prose">{{ open_loops_html | safe }}</div>
-        {% else %}
-            <div class="empty">
-                <div class="empty-icon">✨</div>
-                <div class="empty-text">Memory not initialized yet</div>
+                <div class="empty-text">No active focus recorded yet</div>
             </div>
         {% endif %}
     </div>

@@ -88,7 +88,7 @@ class TestWikiService(unittest.TestCase):
         """Asserts all 4 core wiki pages are created when memory dir is empty."""
         from src.llm.wiki_service import init_memory
         init_memory()
-        for page in ("index.md", "goals.md", "patterns.md", "open_loops.md", "log.md"):
+        for page in ("index.md", "focus.md", "patterns.md", "log.md"):
             self.assertTrue(os.path.exists(os.path.join(self.tmpdir, page)),
                             f"Missing wiki page: {page}")
 
@@ -96,7 +96,7 @@ class TestWikiService(unittest.TestCase):
         """Calling init_memory twice must not overwrite existing pages."""
         from src.llm.wiki_service import init_memory
         init_memory()
-        page_path = os.path.join(self.tmpdir, "goals.md")
+        page_path = os.path.join(self.tmpdir, "focus.md")
         with open(page_path, "w") as f:
             f.write("CUSTOM CONTENT")
         init_memory()
@@ -112,12 +112,12 @@ class TestWikiService(unittest.TestCase):
         new_date = (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%d")
         
         content = (
-            "---\nlast_updated: 2026-01-01\n---\n\n# Open Loops\n\n"
+            "---\nlast_updated: 2026-01-01\n---\n\n# Active Focus\n\n"
             f"- [{old_date}] Buy milk\n"
             f"- [{new_date}] Call dentist\n"
             f"- [CLOSED {new_date}] ~~Old closed item~~\n"
         )
-        with open(os.path.join(self.tmpdir, "open_loops.md"), "w") as f:
+        with open(os.path.join(self.tmpdir, "focus.md"), "w") as f:
             f.write(content)
 
         stale = ws.get_stale_loops(threshold_days=7)
@@ -131,11 +131,11 @@ class TestWikiService(unittest.TestCase):
         original_content = "x" * 1000
         short_response = "x" * 100  # < 50% of original
 
-        page_path = os.path.join(self.tmpdir, "goals.md")
+        page_path = os.path.join(self.tmpdir, "focus.md")
         with open(page_path, "w") as f:
             f.write(original_content)
 
-        result = ws._write_page("goals.md", short_response, original_content)
+        result = ws._write_page("focus.md", short_response, original_content)
         self.assertFalse(result)
 
         # File should be unchanged

@@ -108,3 +108,9 @@ This document serves as the persistent memory and "building flow" tracker for au
 * **Goal:** Allow rapid note capture without requiring audio transcription.
 * **Design Decisions:** Added a simple text handler to telegram bot that bypasses whisper entirely and links directly to the save_note pipeline.
 * **Outcome:** Implemented handle_text checking against authorized id. Added isolated asyncio mocking in tests.
+
+### Merging Open Loops and Goals
+* **Date:** 2026-04-20
+* **Goal:** Simplify Brainstack layout to reduce actionable noise.
+* **Design Decisions:** Deleted separate tracking files for open_loops and goals, consolidating them into an Active Focus schema within focus.md. Strictly limited tracking sizes via prompt injection (max 3 macro goals, max 3 actions per goal).
+* **Outcome:** Cleaned up UI mapping context on dashboard.html and successfully rerouted test verification checks to focus logic.
