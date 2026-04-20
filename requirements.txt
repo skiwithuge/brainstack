@@ -8,4 +8,4 @@ markdown>=3.6
 python-multipart>=0.0.9
 python-dotenv>=1.0.0
 httpx>=0.23.0
-telegramify-markdown
+telegramify-markdown==1.1.2
