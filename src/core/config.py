@@ -6,6 +6,7 @@ load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 auth_id_str = os.getenv("AUTHORIZED_USER_ID", "")
 AUTHORIZED_USER_ID = int(auth_id_str) if auth_id_str.isdigit() else 0
+TELEGRAM_FETCH_ENABLED = os.getenv("TELEGRAM_FETCH_ENABLED", "true").lower() in ("true", "1", "yes", "on")
 
 NOTES_DIR = os.getenv("NOTES_DIR", "./Notes")
 MEMORY_DIR = os.path.join(NOTES_DIR, "memory")

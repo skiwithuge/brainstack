@@ -1,9 +1,10 @@
 import os
 import logging
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+import glob
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
 
-from src.core.config import TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID, validate_bot_config
+from src.core.config import TELEGRAM_BOT_TOKEN, AUTHORIZED_USER_ID, TELEGRAM_FETCH_ENABLED, MEMORY_DIR, validate_bot_config
 from src.audio.transcriber import AudioTranscriber
 from src.storage.notes import save_note
 
@@ -74,6 +75,63 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         logger.error(f"Error saving text note: {e}")
         await update.message.reply_text("❌ An error occurred while saving the text note.")
 
+async def fetch_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user = update.effective_user
+    if user.id != AUTHORIZED_USER_ID:
+        return
+    
+    if not TELEGRAM_FETCH_ENABLED:
+        await update.message.reply_text("⚠️ Fetch functionality is currently disabled.")
+        return
+
+    keyboard = [
+        [InlineKeyboardButton("🎯 Active Focus", callback_data="fetch_focus")],
+        [InlineKeyboardButton("📅 Latest Daily", callback_data="fetch_latest_daily")],
+        [InlineKeyboardButton("📊 Latest Weekly", callback_data="fetch_latest_weekly")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text("What would you like to retrieve?", reply_markup=reply_markup)
+
+async def fetch_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    query = update.callback_query
+    if query.from_user.id != AUTHORIZED_USER_ID:
+        await query.answer("Unauthorized", show_alert=True)
+        return
+    
+    if not TELEGRAM_FETCH_ENABLED:
+        await query.answer("Fetch is disabled", show_alert=True)
+        return
+
+    await query.answer()
+    
+    callback_type = query.data
+    target_file = None
+    
+    if callback_type == "fetch_focus":
+        target_file = os.path.join(MEMORY_DIR, "focus.md")
+    elif callback_type == "fetch_latest_daily":
+        daily_files = sorted(glob.glob(os.path.join(MEMORY_DIR, "daily", "*_summary.md")))
+        if daily_files:
+            target_file = daily_files[-1]
+    elif callback_type == "fetch_latest_weekly":
+        weekly_files = sorted(glob.glob(os.path.join(MEMORY_DIR, "weekly", "*_report.md")))
+        if weekly_files:
+            target_file = weekly_files[-1]
+
+    if not target_file or not os.path.exists(target_file):
+        await query.message.reply_text("❌ Could not find the requested file. It may not have been generated yet.")
+        return
+
+    try:
+        await context.bot.send_document(
+            chat_id=query.message.chat_id,
+            document=open(target_file, "rb"),
+            caption="Here is your requested document."
+        )
+    except Exception as e:
+        logger.error(f"Error sending document: {e}")
+        await query.message.reply_text("❌ Failed to send the document natively.")
+
 def run_bot():
     validate_bot_config()
     global transcriber 
@@ -81,6 +139,8 @@ def run_bot():
     
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
     application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("fetch", fetch_command))
+    application.add_handler(CallbackQueryHandler(fetch_callback))
     application.add_handler(MessageHandler(filters.VOICE, handle_voice))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 

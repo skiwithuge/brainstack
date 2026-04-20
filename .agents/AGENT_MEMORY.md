@@ -114,3 +114,15 @@ This document serves as the persistent memory and "building flow" tracker for au
 * **Goal:** Simplify Brainstack layout to reduce actionable noise.
 * **Design Decisions:** Deleted separate tracking files for open_loops and goals, consolidating them into an Active Focus schema within focus.md. Strictly limited tracking sizes via prompt injection (max 3 macro goals, max 3 actions per goal).
 * **Outcome:** Cleaned up UI mapping context on dashboard.html and successfully rerouted test verification checks to focus logic.
+
+### Telegram File Fetch Command
+* **Date:** 2026-04-20
+* **Goal:** Enable remote fetching of reports and artifacts via Telegram bot.
+* **Design Decisions:** Added a  command that replies with an InlineKeyboardButton menu rather than taking explicit string commands. Avoided dynamic path evaluation by mapping buttons exclusively to hardcoded globs for , , and . Returned the response natively as a Telegram document to bypass size limits.
+* **Outcome:** Configured feature flag . Verified security bindings on telegram callbacks via tests.
+
+### Telegram File Fetch Command
+* **Date:** 2026-04-20
+* **Goal:** Enable remote fetching of reports and artifacts via Telegram bot.
+* **Design Decisions:** Added a `/fetch` command that replies with an InlineKeyboardButton menu rather than taking explicit string commands. Avoided dynamic path evaluation by mapping buttons exclusively to hardcoded globs for `focus.md`, `*_summary.md`, and `*_report.md`. Returned the response natively as a Telegram document to bypass size limits.
+* **Outcome:** Configured feature flag `TELEGRAM_FETCH_ENABLED`. Verified security bindings on telegram callbacks via tests.

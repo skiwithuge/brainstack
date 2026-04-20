@@ -334,5 +334,52 @@ class TestTelegramBot(unittest.IsolatedAsyncioTestCase):
             notes_pkg.NOTES_DIR = old_notes_dir
             shutil.rmtree(tmp, ignore_errors=True)
 
+    async def test_fetch_command_authorized(self):
+        import src.core.config
+        from src.telegram.bot_service import fetch_command
+        
+        class MockUser:
+            def __init__(self, id):
+                self.id = id
+
+        class MockMessage:
+            def __init__(self):
+                self.replied = None
+                self.reply_markup = None
+            async def reply_text(self, text, reply_markup=None):
+                self.replied = text
+                self.reply_markup = reply_markup
+
+        class MockUpdate:
+            def __init__(self, user_id):
+                self.effective_user = MockUser(user_id)
+                self.message = MockMessage()
+
+        update = MockUpdate(int(src.core.config.AUTHORIZED_USER_ID))
+        await fetch_command(update, None)
+        self.assertIsNotNone(update.message.reply_markup)
+        
+    async def test_fetch_command_unauthorized(self):
+        from src.telegram.bot_service import fetch_command
+        
+        class MockUser:
+            def __init__(self, id):
+                self.id = id
+                
+        class MockMessage:
+            def __init__(self):
+                self.replied = None
+            async def reply_text(self, text, reply_markup=None):
+                self.replied = text
+
+        class MockUpdate:
+            def __init__(self, user_id):
+                self.effective_user = MockUser(user_id)
+                self.message = MockMessage()
+
+        update = MockUpdate(999999)
+        await fetch_command(update, None)
+        self.assertIsNone(update.message.replied)
+
 if __name__ == '__main__':
     unittest.main()
