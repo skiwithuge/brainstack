@@ -110,9 +110,24 @@ async def fetch_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if callback_type == "fetch_focus":
         target_file = os.path.join(MEMORY_DIR, "focus.md")
     elif callback_type == "fetch_latest_daily":
-        daily_files = sorted(glob.glob(os.path.join(MEMORY_DIR, "daily", "*_summary.md")))
-        if daily_files:
-            target_file = daily_files[-1]
+        import src.core.config
+        notes_dir = src.core.config.NOTES_DIR
+        daily_folders = [d for d in os.listdir(notes_dir) if os.path.isdir(os.path.join(notes_dir, d)) and d != "memory"]
+        daily_folders.sort()
+        if daily_folders:
+            latest = daily_folders[-1]
+            temp_path = f"/tmp/{latest}_daily_summary.md"
+            with open(temp_path, "w") as out:
+                out.write(f"# Daily Summary for {latest}\n\n")
+                found_any = False
+                for suffix in ["_lineage.md", "_actions.md", "_drafts.md", "_analysis.md", "_Fallback_Briefing.md"]:
+                    fpath = os.path.join(notes_dir, latest, f"{latest}{suffix}")
+                    if os.path.exists(fpath):
+                        with open(fpath, "r") as inf:
+                            out.write(inf.read() + "\n\n")
+                        found_any = True
+                if found_any:
+                    target_file = temp_path
     elif callback_type == "fetch_latest_weekly":
         weekly_files = sorted(glob.glob(os.path.join(MEMORY_DIR, "weekly", "*_report.md")))
         if weekly_files:
@@ -132,12 +147,16 @@ async def fetch_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         logger.error(f"Error sending document: {e}")
         await query.message.reply_text("❌ Failed to send the document natively.")
 
+
+async def post_init(application: Application) -> None:
+    await application.bot.delete_my_commands()
+
 def run_bot():
     validate_bot_config()
     global transcriber 
     transcriber = AudioTranscriber()
     
-    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+    application = Application.builder().token(TELEGRAM_BOT_TOKEN).post_init(post_init).build()
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("fetch", fetch_command))
     application.add_handler(CallbackQueryHandler(fetch_callback))
