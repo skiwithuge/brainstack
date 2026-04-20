@@ -143,10 +143,21 @@ async def fetch_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             markdown_content = f.read()
 
         chunks = await telegramify(markdown_content)
+        from telegram import MessageEntity
         for chunk in chunks:
+            tele_entities = [
+                MessageEntity(
+                    type=ent.type,
+                    offset=ent.offset,
+                    length=ent.length,
+                    url=ent.url,
+                    language=ent.language,
+                    custom_emoji_id=ent.custom_emoji_id
+                ) for ent in chunk.entities
+            ]
             await query.message.reply_text(
                 text=chunk.text,
-                entities=chunk.entities
+                entities=tele_entities
             )
     except Exception as e:
         logger.error(f"Error rendering markdown by telegramify: {e}. Falling back to document.")
