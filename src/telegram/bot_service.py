@@ -113,9 +113,8 @@ async def fetch_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         import src.core.config
         notes_dir = src.core.config.NOTES_DIR
         daily_folders = [d for d in os.listdir(notes_dir) if os.path.isdir(os.path.join(notes_dir, d)) and d != "memory"]
-        daily_folders.sort()
-        if daily_folders:
-            latest = daily_folders[-1]
+        daily_folders.sort(reverse=True)
+        for latest in daily_folders:
             temp_path = f"/tmp/{latest}_daily_summary.md"
             with open(temp_path, "w") as out:
                 out.write(f"# Daily Summary for {latest}\n\n")
@@ -128,6 +127,7 @@ async def fetch_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
                         found_any = True
                 if found_any:
                     target_file = temp_path
+                    break
     elif callback_type == "fetch_latest_weekly":
         weekly_files = sorted(glob.glob(os.path.join(MEMORY_DIR, "weekly", "*_report.md")))
         if weekly_files:
