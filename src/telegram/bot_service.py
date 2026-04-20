@@ -138,14 +138,27 @@ async def fetch_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         return
 
     try:
-        await context.bot.send_document(
-            chat_id=query.message.chat_id,
-            document=open(target_file, "rb"),
-            caption="Here is your requested document."
-        )
+        from telegramify_markdown import telegramify
+        with open(target_file, "r", encoding="utf-8") as f:
+            markdown_content = f.read()
+
+        chunks = await telegramify(markdown_content)
+        for chunk in chunks:
+            await query.message.reply_text(
+                text=chunk.text,
+                entities=chunk.entities
+            )
     except Exception as e:
-        logger.error(f"Error sending document: {e}")
-        await query.message.reply_text("❌ Failed to send the document natively.")
+        logger.error(f"Error rendering markdown by telegramify: {e}. Falling back to document.")
+        try:
+            await context.bot.send_document(
+                chat_id=query.message.chat_id,
+                document=open(target_file, "rb"),
+                caption="Text rendering failed. Here is your requested document."
+            )
+        except Exception as e2:
+            logger.error(f"Error sending document: {e2}")
+            await query.message.reply_text("❌ Failed to send the document natively.")
 
 
 async def post_init(application: Application) -> None:
